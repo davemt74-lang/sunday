@@ -1,0 +1,2764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Provider Profile | Wellness Agent</title>
+
+<style>
+
+/* ==================================================
+   VARIABLES
+================================================== */
+
+:root {
+
+    --bg: #ffffff;
+    --surface: #f7f8fa;
+    --surface-2: #f0f2f4;
+
+    --border: #dfe4e9;
+
+    --text: #15191f;
+    --muted: #68727c;
+
+    --blue: #1769ff;
+    --green: #16845c;
+    --red: #b42318;
+
+    --sidebar: 248px;
+
+    --shadow:
+        0 18px 55px rgba(20,28,38,.12);
+
+}
+
+
+/* ==================================================
+   RESET
+================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background:
+        var(--bg);
+
+    color:
+        var(--text);
+
+}
+
+button,
+input,
+textarea,
+select {
+
+    font: inherit;
+
+}
+
+button {
+
+    cursor: pointer;
+
+}
+
+
+/* ==================================================
+   SIDEBAR
+================================================== */
+
+.sidebar {
+
+    position: fixed;
+
+    inset:
+        0
+        auto
+        0
+        0;
+
+    width:
+        var(--sidebar);
+
+    background:
+        #fff;
+
+    border-right:
+        1px solid
+        var(--border);
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    z-index:
+        100;
+
+    overflow:
+        hidden;
+
+    transition:
+        transform .28s ease;
+
+}
+
+.sidebar-header {
+
+    height:
+        68px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    padding:
+        0 22px;
+
+    border-bottom:
+        1px solid
+        var(--border);
+
+}
+
+.brand {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        11px;
+
+    font-size:
+        15px;
+
+    font-weight:
+        760;
+
+    letter-spacing:
+        -.025em;
+
+}
+
+.logo {
+
+    width:
+        28px;
+
+    height:
+        28px;
+
+    border:
+        2px solid
+        var(--text);
+
+    border-radius:
+        8px;
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+}
+
+.logo::after {
+
+    content:
+        "";
+
+    width:
+        7px;
+
+    height:
+        7px;
+
+    border-radius:
+        50%;
+
+    background:
+        var(--blue);
+
+}
+
+.sidebar-nav {
+
+    flex:
+        1;
+
+    padding:
+        18px 12px;
+
+    overflow:
+        hidden;
+
+}
+
+.nav-group {
+
+    margin-bottom:
+        16px;
+
+}
+
+.nav-label {
+
+    padding:
+        0 11px 7px;
+
+    color:
+        var(--muted);
+
+    font-size:
+        10px;
+
+    font-weight:
+        750;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        .12em;
+
+}
+
+.nav-item {
+
+    width:
+        100%;
+
+    min-height:
+        36px;
+
+    border:
+        0;
+
+    background:
+        transparent;
+
+    color:
+        var(--muted);
+
+    border-radius:
+        9px;
+
+    padding:
+        7px 11px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        12px;
+
+    text-align:
+        left;
+
+    font-size:
+        13px;
+
+    line-height:
+        1.1;
+
+    transition:
+        .16s;
+
+}
+
+.nav-item:hover {
+
+    color:
+        var(--text);
+
+    background:
+        var(--surface);
+
+}
+
+.nav-item.active {
+
+    color:
+        var(--text);
+
+    background:
+        var(--surface-2);
+
+    font-weight:
+        700;
+
+}
+
+.nav-icon {
+
+    width:
+        18px;
+
+    height:
+        18px;
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    flex:
+        0 0 18px;
+
+}
+
+.sidebar-footer {
+
+    border-top:
+        1px solid
+        var(--border);
+
+    padding:
+        14px 12px;
+
+}
+
+.profile-mini {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+    padding:
+        9px 10px;
+
+}
+
+.avatar {
+
+    width:
+        34px;
+
+    height:
+        34px;
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    border-radius:
+        50%;
+
+    background:
+        var(--surface-2);
+
+    font-size:
+        11px;
+
+    font-weight:
+        750;
+
+}
+
+
+/* ==================================================
+   MOBILE SIDEBAR
+================================================== */
+
+.overlay {
+
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    background:
+        rgba(15,20,25,.30);
+
+    z-index:
+        90;
+
+    opacity:
+        0;
+
+    visibility:
+        hidden;
+
+    transition:
+        .25s;
+
+}
+
+.overlay.open {
+
+    opacity:
+        1;
+
+    visibility:
+        visible;
+
+}
+
+
+/* ==================================================
+   WORKSPACE
+================================================== */
+
+.workspace {
+
+    margin-left:
+        var(--sidebar);
+
+    min-height:
+        100vh;
+
+}
+
+
+/* ==================================================
+   TOP BAR
+================================================== */
+
+.topbar {
+
+    height:
+        68px;
+
+    border-bottom:
+        1px solid
+        var(--border);
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    padding:
+        0 30px;
+
+    position:
+        sticky;
+
+    top:
+        0;
+
+    z-index:
+        50;
+
+    background:
+        rgba(255,255,255,.94);
+
+    backdrop-filter:
+        blur(16px);
+
+}
+
+.page-title {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        12px;
+
+}
+
+.page-title strong {
+
+    font-size:
+        14px;
+
+}
+
+.page-title span {
+
+    color:
+        var(--muted);
+
+    font-size:
+        12px;
+
+}
+
+.mobile-menu {
+
+    display:
+        none;
+
+    width:
+        40px;
+
+    height:
+        40px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        10px;
+
+    background:
+        #fff;
+
+    place-items:
+        center;
+
+}
+
+
+/* ==================================================
+   CONTENT
+================================================== */
+
+.content {
+
+    width:
+        min(
+            1050px,
+            calc(100% - 44px)
+        );
+
+    margin:
+        auto;
+
+    padding:
+        42px 0 100px;
+
+}
+
+
+/* ==================================================
+   HERO
+================================================== */
+
+.provider-hero {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        110px
+        1fr
+        auto;
+
+    gap:
+        24px;
+
+    align-items:
+        center;
+
+    padding-bottom:
+        30px;
+
+    border-bottom:
+        1px solid
+        var(--border);
+
+}
+
+.provider-avatar {
+
+    width:
+        110px;
+
+    height:
+        110px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        18px;
+
+    background:
+        var(--surface);
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    font-size:
+        26px;
+
+    font-weight:
+        800;
+
+}
+
+.provider-eyebrow {
+
+    color:
+        var(--muted);
+
+    font-size:
+        10px;
+
+    font-weight:
+        750;
+
+    text-transform:
+        uppercase;
+
+    letter-spacing:
+        .13em;
+
+}
+
+.provider-name {
+
+    margin:
+        7px 0 5px;
+
+    font-size:
+        32px;
+
+    line-height:
+        1;
+
+    letter-spacing:
+        -.045em;
+
+}
+
+.provider-role {
+
+    color:
+        var(--muted);
+
+    font-size:
+        13px;
+
+}
+
+.provider-location {
+
+    margin-top:
+        8px;
+
+    color:
+        var(--muted);
+
+    font-size:
+        11px;
+
+}
+
+.verified {
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        6px;
+
+    margin-left:
+        7px;
+
+    color:
+        var(--green);
+
+    font-size:
+        10px;
+
+    font-weight:
+        750;
+
+}
+
+.verify-dot {
+
+    width:
+        7px;
+
+    height:
+        7px;
+
+    border-radius:
+        50%;
+
+    background:
+        var(--green);
+
+}
+
+.hero-actions {
+
+    display:
+        flex;
+
+    gap:
+        8px;
+
+}
+
+.btn {
+
+    border:
+        1px solid
+        var(--border);
+
+    background:
+        #fff;
+
+    border-radius:
+        9px;
+
+    padding:
+        10px 14px;
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+
+}
+
+.btn:hover {
+
+    background:
+        var(--surface);
+
+}
+
+.btn-primary {
+
+    background:
+        var(--text);
+
+    border-color:
+        var(--text);
+
+    color:
+        #fff;
+
+}
+
+
+/* ==================================================
+   GRID
+================================================== */
+
+.grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(12, 1fr);
+
+    gap:
+        14px;
+
+    margin-top:
+        22px;
+
+}
+
+.card {
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        15px;
+
+    background:
+        #fff;
+
+    padding:
+        20px;
+
+}
+
+.span4 {
+    grid-column:
+        span 4;
+}
+
+.span6 {
+    grid-column:
+        span 6;
+}
+
+.span8 {
+    grid-column:
+        span 8;
+}
+
+.span12 {
+    grid-column:
+        span 12;
+}
+
+
+/* ==================================================
+   CARD HEAD
+================================================== */
+
+.card-head {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    gap:
+        15px;
+
+    align-items:
+        flex-start;
+
+    margin-bottom:
+        18px;
+
+}
+
+.card-title {
+
+    font-size:
+        13px;
+
+    font-weight:
+        750;
+
+}
+
+.card-sub {
+
+    color:
+        var(--muted);
+
+    font-size:
+        10px;
+
+    margin-top:
+        4px;
+
+}
+
+
+/* ==================================================
+   ABOUT
+================================================== */
+
+.about {
+
+    color:
+        var(--muted);
+
+    font-size:
+        13px;
+
+    line-height:
+        1.7;
+
+}
+
+
+/* ==================================================
+   TAGS
+================================================== */
+
+.tags {
+
+    display:
+        flex;
+
+    flex-wrap:
+        wrap;
+
+    gap:
+        7px;
+
+}
+
+.tag {
+
+    padding:
+        7px 10px;
+
+    background:
+        var(--surface);
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        999px;
+
+    font-size:
+        10px;
+
+}
+
+
+/* ==================================================
+   PROVIDER STATS
+================================================== */
+
+.stat-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:
+        12px;
+
+}
+
+.stat {
+
+    padding:
+        14px;
+
+    background:
+        var(--surface);
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        11px;
+
+}
+
+.stat-number {
+
+    font-size:
+        24px;
+
+    font-weight:
+        760;
+
+    letter-spacing:
+        -.04em;
+
+}
+
+.stat-label {
+
+    margin-top:
+        4px;
+
+    color:
+        var(--muted);
+
+    font-size:
+        10px;
+
+}
+
+
+/* ==================================================
+   SPECIALTIES
+================================================== */
+
+.specialties {
+
+    display:
+        grid;
+
+    gap:
+        8px;
+
+}
+
+.specialty {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    padding:
+        12px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        10px;
+
+}
+
+.specialty strong {
+
+    display:
+        block;
+
+    font-size:
+        11px;
+
+}
+
+.specialty span {
+
+    display:
+        block;
+
+    margin-top:
+        3px;
+
+    color:
+        var(--muted);
+
+    font-size:
+        10px;
+
+}
+
+
+/* ==================================================
+   CREDENTIALS
+================================================== */
+
+.credential {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        32px
+        1fr;
+
+    gap:
+        11px;
+
+    padding:
+        12px 0;
+
+    border-top:
+        1px solid
+        var(--border);
+
+}
+
+.credential:first-child {
+
+    border-top:
+        0;
+
+}
+
+.credential-icon {
+
+    width:
+        32px;
+
+    height:
+        32px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        8px;
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+
+}
+
+.credential strong {
+
+    display:
+        block;
+
+    font-size:
+        11px;
+
+}
+
+.credential span {
+
+    display:
+        block;
+
+    margin-top:
+        3px;
+
+    color:
+        var(--muted);
+
+    font-size:
+        10px;
+
+}
+
+
+/* ==================================================
+   PRACTICE
+================================================== */
+
+.info-list {
+
+    display:
+        grid;
+
+    gap:
+        0;
+
+}
+
+.info-row {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    gap:
+        20px;
+
+    padding:
+        12px 0;
+
+    border-top:
+        1px solid
+        var(--border);
+
+    font-size:
+        11px;
+
+}
+
+.info-row:first-child {
+
+    border-top:
+        0;
+
+}
+
+.info-row span {
+
+    color:
+        var(--muted);
+
+}
+
+
+/* ==================================================
+   PROVIDER CTA
+================================================== */
+
+.provider-cta {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        20px;
+
+}
+
+.provider-cta p {
+
+    margin:
+        5px 0 0;
+
+    color:
+        var(--muted);
+
+    font-size:
+        11px;
+
+    line-height:
+        1.5;
+
+}
+
+
+/* ==================================================
+   CHAT
+================================================== */
+
+.chat-footer {
+
+    position:
+        fixed;
+
+    bottom:
+        16px;
+
+    left:
+        calc(
+            var(--sidebar)
+            +
+            (100vw - var(--sidebar)) / 2
+        );
+
+    transform:
+        translateX(-50%);
+
+    width:
+        min(
+            760px,
+            calc(
+                100vw
+                -
+                var(--sidebar)
+                -
+                44px
+            )
+        );
+
+    z-index:
+        80;
+
+}
+
+.chat-window {
+
+    position:
+        absolute;
+
+    left:
+        calc(100% + 12px);
+
+    right:
+        auto;
+
+    bottom:
+        0;
+
+    width:
+        360px;
+
+    display:
+        none;
+
+    background:
+        #fff;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        16px;
+
+    box-shadow:
+        var(--shadow);
+
+    padding:
+        18px;
+
+}
+
+.chat-window.open {
+
+    display:
+        block;
+
+}
+
+.chat-window strong {
+
+    font-size:
+        12px;
+
+}
+
+.chat-window p {
+
+    color:
+        var(--muted);
+
+    font-size:
+        11px;
+
+    line-height:
+        1.5;
+
+}
+
+.chat-shell {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    padding:
+        8px;
+
+    background:
+        rgba(255,255,255,.96);
+
+    border:
+        1px solid
+        #c8d0d8;
+
+    border-radius:
+        16px;
+
+    box-shadow:
+        var(--shadow);
+
+    backdrop-filter:
+        blur(16px);
+
+}
+
+.chat-btn {
+
+    width:
+        42px;
+
+    height:
+        42px;
+
+    flex:
+        0 0 42px;
+
+    border-radius:
+        11px;
+
+}
+
+.plus {
+
+    background:
+        #fff;
+
+    border:
+        1px solid
+        #c8d0d8;
+
+    font-size:
+        20px;
+
+}
+
+.send {
+
+    background:
+        var(--text);
+
+    color:
+        #fff;
+
+    border:
+        1px solid
+        var(--text);
+
+    font-size:
+        18px;
+
+}
+
+.chat-input {
+
+    flex:
+        1;
+
+    min-width:
+        0;
+
+    border:
+        0;
+
+    outline:
+        0;
+
+    background:
+        transparent;
+
+    font-size:
+        13px;
+
+}
+
+.chat-input::placeholder {
+
+    color:
+        var(--muted);
+
+}
+
+
+/* ==================================================
+   MOBILE
+================================================== */
+
+@media(max-width:800px) {
+
+    .sidebar {
+
+        transform:
+            translateX(-100%);
+
+    }
+
+    .sidebar.open {
+
+        transform:
+            translateX(0);
+
+    }
+
+    .workspace {
+
+        margin-left:
+            0;
+
+    }
+
+    .mobile-menu {
+
+        display:
+            grid;
+
+    }
+
+    .topbar {
+
+        padding:
+            0 16px;
+
+    }
+
+    .content {
+
+        width:
+            calc(100% - 24px);
+
+        padding:
+            30px 0 110px;
+
+    }
+
+    .provider-hero {
+
+        grid-template-columns:
+            76px
+            1fr;
+
+    }
+
+    .provider-avatar {
+
+        width:
+            76px;
+
+        height:
+            76px;
+
+        font-size:
+            18px;
+
+    }
+
+    .hero-actions {
+
+        grid-column:
+            1 / -1;
+
+    }
+
+    .span4,
+    .span6,
+    .span8 {
+
+        grid-column:
+            span 12;
+
+    }
+
+    .chat-footer {
+
+        left:
+            50%;
+
+        width:
+            calc(100% - 22px);
+
+    }
+
+    .chat-window {
+
+        left:
+            0;
+
+        right:
+            0;
+
+        bottom:
+            62px;
+
+        width:
+            100%;
+
+    }
+
+}
+
+@media(max-width:500px) {
+
+    .provider-name {
+
+        font-size:
+            27px;
+
+    }
+
+    .stat-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<!-- ==================================================
+     SIDEBAR
+================================================== -->
+
+<aside
+    class="sidebar"
+    id="sidebar"
+>
+
+    <div class="sidebar-header">
+
+        <div class="brand">
+
+            <div class="logo"></div>
+
+            Costia
+
+        </div>
+
+    </div>
+
+
+    <nav class="sidebar-nav">
+
+
+        <div class="nav-group">
+
+            <div class="nav-label">
+                Workspace
+            </div>
+
+            <button
+                class="nav-item"
+                data-page="home"
+            >
+                <span class="nav-icon">⌂</span>
+                Home
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="wellness"
+            >
+                <span class="nav-icon">◉</span>
+                My Wellness
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="cabinet"
+            >
+                <span class="nav-icon">▤</span>
+                My Cabinet
+            </button>
+
+        </div>
+
+
+        <div class="nav-group">
+
+            <div class="nav-label">
+                Intelligence
+            </div>
+
+            <button
+                class="nav-item"
+                data-page="recommendations"
+            >
+                <span class="nav-icon">✦</span>
+                Recommendations
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="plans"
+            >
+                <span class="nav-icon">□</span>
+                Plans
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="reminders"
+            >
+                <span class="nav-icon">◷</span>
+                Reminders
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="progress"
+            >
+                <span class="nav-icon">↗</span>
+                Progress
+            </button>
+
+        </div>
+
+
+        <div class="nav-group">
+
+            <div class="nav-label">
+                Learn
+            </div>
+
+            <button
+                class="nav-item"
+                data-page="academy"
+            >
+                <span class="nav-icon">▥</span>
+                Wellness Academy
+            </button>
+
+        </div>
+
+
+        <div class="nav-group">
+
+            <div class="nav-label">
+                Providers
+            </div>
+
+            <button
+                class="nav-item active"
+                data-page="provider"
+            >
+                <span class="nav-icon">◇</span>
+                Provider Profile
+            </button>
+
+        </div>
+
+
+        <div class="nav-group">
+
+            <div class="nav-label">
+                Account
+            </div>
+
+            <button
+                class="nav-item"
+                data-page="profile"
+            >
+                <span class="nav-icon">○</span>
+                Profile
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="settings"
+            >
+                <span class="nav-icon">⚙</span>
+                Settings
+            </button>
+
+        </div>
+
+    </nav>
+
+
+    <div class="sidebar-footer">
+
+        <div class="profile-mini">
+
+            <div class="avatar">
+                DE
+            </div>
+
+            <div>
+
+                <strong>
+                    Wellness Profile
+                </strong>
+
+                <div style="
+                    color:var(--muted);
+                    font-size:10px;
+                    margin-top:3px;
+                ">
+                    Personal account
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</aside>
+
+
+<div
+    class="overlay"
+    id="overlay"
+></div>
+
+
+<!-- ==================================================
+     WORKSPACE
+================================================== -->
+
+<section class="workspace">
+
+
+<header class="topbar">
+
+    <div class="page-title">
+
+        <button
+            class="mobile-menu"
+            id="menu"
+            aria-label="Open navigation"
+        >
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+            >
+                <path
+                    d="M4 6h16M4 12h16M4 18h16"
+                />
+            </svg>
+
+        </button>
+
+        <div>
+
+            <strong>
+                Provider Profile
+            </strong>
+
+            <span>
+                / Trusted Wellness Provider
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div style="
+        display:flex;
+        align-items:center;
+        gap:7px;
+        color:var(--muted);
+        font-size:11px;
+    ">
+
+        <span style="
+            width:7px;
+            height:7px;
+            border-radius:50%;
+            background:var(--green);
+        "></span>
+
+        Provider verified
+
+    </div>
+
+</header>
+
+
+<main class="content">
+
+
+<!-- ==================================================
+     PROVIDER HERO
+================================================== -->
+
+<section class="provider-hero">
+
+
+    <div class="provider-avatar">
+        DR
+    </div>
+
+
+    <div>
+
+        <div class="provider-eyebrow">
+            Wellness Provider
+        </div>
+
+        <h1 class="provider-name">
+            Dr. Sarah Mitchell
+        </h1>
+
+        <div class="provider-role">
+
+            Integrative Wellness Specialist
+
+            <span class="verified">
+
+                <span class="verify-dot"></span>
+
+                Verified Provider
+
+            </span>
+
+        </div>
+
+        <div class="provider-location">
+            Los Angeles, California
+        </div>
+
+    </div>
+
+
+    <div class="hero-actions">
+
+        <button
+            class="btn"
+            onclick="saveProvider()"
+        >
+            Save Provider
+        </button>
+
+        <button
+            class="btn btn-primary"
+            onclick="contactProvider()"
+        >
+            Contact Provider
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     PROFILE CONTENT
+================================================== -->
+
+<div class="grid">
+
+
+    <!-- ABOUT -->
+
+    <section class="card span8">
+
+        <div class="card-head">
+
+            <div>
+
+                <div class="card-title">
+                    About this provider
+                </div>
+
+                <div class="card-sub">
+                    Professional overview
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="about">
+
+            Dr. Sarah Mitchell works with individuals
+            interested in developing practical wellness
+            strategies around nutrition, sleep, recovery
+            and everyday health habits.
+
+            <br><br>
+
+            Her approach focuses on understanding the
+            individual's goals and circumstances before
+            discussing products, routines or other options.
+
+            <br><br>
+
+            Provider information shown in this profile
+            is intended to help users understand the
+            provider's area of practice and relationship
+            to the Wellness Agent.
+
+        </div>
+
+    </section>
+
+
+    <!-- PROVIDER STATUS -->
+
+    <section class="card span4">
+
+        <div class="card-head">
+
+            <div>
+
+                <div class="card-title">
+                    Provider status
+                </div>
+
+                <div class="card-sub">
+                    Platform verification
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-grid"
+             style="grid-template-columns:1fr;">
+
+            <div class="stat">
+
+                <div class="stat-number">
+                    Verified
+                </div>
+
+                <div class="stat-label">
+                    Provider identity
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-number">
+                    Active
+                </div>
+
+                <div class="stat-label">
+                    Platform status
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- SPECIALTIES -->
+
+    <section class="card span6">
+
+        <div class="card-head">
+
+            <div>
+
+                <div class="card-title">
+                    Areas of practice
+                </div>
+
+                <div class="card-sub">
+                    Provider specialties
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="specialties">
+
+
+            <div class="specialty">
+
+                <div>
+
+                    <strong>
+                        Sleep & Recovery
+                    </strong>
+
+                    <span>
+                        Sleep routines and recovery habits
+                    </span>
+
+                </div>
+
+                <span>
+                    Primary
+                </span>
+
+            </div>
+
+
+            <div class="specialty">
+
+                <div>
+
+                    <strong>
+                        Nutrition
+                    </strong>
+
+                    <span>
+                        General nutrition education
+                    </span>
+
+                </div>
+
+                <span>
+                    Focus
+                </span>
+
+            </div>
+
+
+            <div class="specialty">
+
+                <div>
+
+                    <strong>
+                        Lifestyle Wellness
+                    </strong>
+
+                    <span>
+                        Everyday wellness practices
+                    </span>
+
+                </div>
+
+                <span>
+                    Focus
+                </span>
+
+            </div>
+
+
+            <div class="specialty">
+
+                <div>
+
+                    <strong>
+                        Recovery
+                    </strong>
+
+                    <span>
+                        Daily recovery and routine design
+                    </span>
+
+                </div>
+
+                <span>
+                    Focus
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CREDENTIALS -->
+
+    <section class="card span6">
+
+        <div class="card-head">
+
+            <div>
+
+                <div class="card-title">
+                    Credentials
+                </div>
+
+                <div class="card-sub">
+                    Professional background
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div>
+
+
+            <div class="credential">
+
+                <div class="credential-icon">
+                    MD
+                </div>
+
+                <div>
+
+                    <strong>
+                        Doctor of Medicine
+                    </strong>
+
+                    <span>
+                        Example Medical University
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="credential">
+
+                <div class="credential-icon">
+                    IW
+                </div>
+
+                <div>
+
+                    <strong>
+                        Integrative Wellness
+                    </strong>
+
+                    <span>
+                        Professional certification
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="credential">
+
+                <div class="credential-icon">
+                    CE
+                </div>
+
+                <div>
+
+                    <strong>
+                        Continuing Education
+                    </strong>
+
+                    <span>
+                        Ongoing professional education
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PRACTICE DETAILS -->
+
+    <section class="card span6">
+
+        <div class="card-head">
+
+            <div>
+
+                <div class="card-title">
+                    Practice information
+                </div>
+
+                <div class="card-sub">
+                    Current availability
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="info-list">
+
+
+            <div class="info-row">
+
+                <span>
+                    Practice type
+                </span>
+
+                <strong>
+                    Private practice
+                </strong>
+
+            </div>
+
+
+            <div class="info-row">
+
+                <span>
+                    Appointments
+                </span>
+
+                <strong>
+                    Available
+                </strong>
+
+            </div>
+
+
+            <div class="info-row">
+
+                <span>
+                    Consultation
+                </span>
+
+                <strong>
+                    Virtual
+                </strong>
+
+            </div>
+
+
+            <div class="info-row">
+
+                <span>
+                    Location
+                </span>
+
+                <strong>
+                    Los Angeles, CA
+                </strong>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- AGENT RELATIONSHIP -->
+
+    <section class="card span6">
+
+        <div class="card-head">
+
+            <div>
+
+                <div class="card-title">
+                    Agent relationship
+                </div>
+
+                <div class="card-sub">
+                    How this provider can interact
+                    with your wellness workspace
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="about">
+
+            The Wellness Agent can use provider information
+            as contextual information when helping you
+            understand your wellness goals.
+
+            <br><br>
+
+            Provider information does not automatically
+            override the platform's safety rules,
+            recommendation gates or user preferences.
+
+        </div>
+
+    </section>
+
+
+    <!-- CTA -->
+
+    <section class="card span12">
+
+        <div class="provider-cta">
+
+            <div>
+
+                <div class="card-title">
+                    Connect with this provider
+                </div>
+
+                <p>
+                    Save this provider to your wellness
+                    workspace or start a conversation.
+                </p>
+
+            </div>
+
+
+            <div class="hero-actions">
+
+                <button
+                    class="btn"
+                    onclick="saveProvider()"
+                >
+                    Save Provider
+                </button>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="contactProvider()"
+                >
+                    Contact Provider
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+</main>
+
+</section>
+
+
+<!-- ==================================================
+     STICKY AGENT CHAT
+================================================== -->
+
+<div class="chat-footer">
+
+
+    <div
+        class="chat-window"
+        id="chatWindow"
+    >
+
+        <strong>
+            Wellness Agent
+        </strong>
+
+        <p id="chatResponse">
+            Ask about this provider,
+            your wellness profile,
+            Academy lessons or recommendations.
+        </p>
+
+    </div>
+
+
+    <div class="chat-shell">
+
+
+        <button
+            class="chat-btn plus"
+            id="plus"
+            aria-label="Agent tools"
+        >
+            +
+        </button>
+
+
+        <input
+            class="chat-input"
+            id="chatInput"
+            type="text"
+            placeholder="Ask your wellness agent..."
+        >
+
+
+        <button
+            class="chat-btn send"
+            id="send"
+            aria-label="Send"
+        >
+            →
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+
+        /* ==================================================
+           SIDEBAR
+        ================================================== */
+
+        const sidebar =
+            document.getElementById(
+                "sidebar"
+            );
+
+        const overlay =
+            document.getElementById(
+                "overlay"
+            );
+
+        const menu =
+            document.getElementById(
+                "menu"
+            );
+
+
+        if (menu) {
+
+            menu.addEventListener(
+                "click",
+                function () {
+
+                    sidebar.classList.add(
+                        "open"
+                    );
+
+                    overlay.classList.add(
+                        "open"
+                    );
+
+                }
+            );
+
+        }
+
+
+        function closeSidebar() {
+
+            sidebar.classList.remove(
+                "open"
+            );
+
+            overlay.classList.remove(
+                "open"
+            );
+
+        }
+
+
+        if (overlay) {
+
+            overlay.addEventListener(
+                "click",
+                closeSidebar
+            );
+
+        }
+
+
+        /* ==================================================
+           SIDEBAR LINKS
+        ================================================== */
+
+        document
+            .querySelectorAll(
+                ".nav-item"
+            )
+            .forEach(
+                function (item) {
+
+                    item.addEventListener(
+                        "click",
+                        function () {
+
+                            const page =
+                                item.dataset.page;
+
+                            if (
+                                page ===
+                                "provider"
+                            ) {
+
+                                window.location.href =
+                                    "/profile.html";
+
+                                return;
+
+                            }
+
+
+                            const routes = {
+
+                                home:
+                                    "/",
+
+                                wellness:
+                                    "/",
+
+                                cabinet:
+                                    "/",
+
+                                recommendations:
+                                    "/",
+
+                                plans:
+                                    "/",
+
+                                reminders:
+                                    "/",
+
+                                progress:
+                                    "/",
+
+                                academy:
+                                    "/",
+
+                                profile:
+                                    "/",
+
+                                settings:
+                                    "/"
+
+                            };
+
+
+                            if (
+                                routes[page]
+                            ) {
+
+                                window.location.href =
+                                    routes[page];
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+
+        /* ==================================================
+           PROVIDER ACTIONS
+        ================================================== */
+
+        window.saveProvider =
+            function () {
+
+                showChat(
+                    "Provider saved to your wellness workspace."
+                );
+
+            };
+
+
+        window.contactProvider =
+            function () {
+
+                showChat(
+                    "Provider contact flow ready for integration."
+                );
+
+            };
+
+
+        /* ==================================================
+           CHAT
+        ================================================== */
+
+        const chatWindow =
+            document.getElementById(
+                "chatWindow"
+            );
+
+        const chatResponse =
+            document.getElementById(
+                "chatResponse"
+            );
+
+        const chatInput =
+            document.getElementById(
+                "chatInput"
+            );
+
+        const plus =
+            document.getElementById(
+                "plus"
+            );
+
+        const send =
+            document.getElementById(
+                "send"
+            );
+
+
+        function showChat(message) {
+
+            chatResponse.textContent =
+                message;
+
+            chatWindow.classList.add(
+                "open"
+            );
+
+        }
+
+
+        if (plus) {
+
+            plus.addEventListener(
+                "click",
+                function () {
+
+                    chatWindow.classList.toggle(
+                        "open"
+                    );
+
+                }
+            );
+
+        }
+
+
+        function sendMessage() {
+
+            const message =
+                chatInput.value.trim();
+
+            if (!message) {
+                return;
+            }
+
+            showChat(
+                "Agent context prepared for: " +
+                message
+            );
+
+            chatInput.value = "";
+
+        }
+
+
+        if (send) {
+
+            send.addEventListener(
+                "click",
+                sendMessage
+            );
+
+        }
+
+
+        if (chatInput) {
+
+            chatInput.addEventListener(
+                "keydown",
+                function (event) {
+
+                    if (
+                        event.key ===
+                        "Enter"
+                    ) {
+
+                        event.preventDefault();
+
+                        sendMessage();
+
+                    }
+
+                }
+            );
+
+        }
+
+
+    }
+);
+
+</script>
+
+</body>
+</html>

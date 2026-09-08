@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Costia — Wellness Intelligence</title>
+
+<style>
+:root{
+    --bg:#fff;
+    --surface:#f7f8fa;
+    --surface2:#f0f2f4;
+    --border:#dfe4e9;
+    --text:#15191f;
+    --muted:#68727c;
+    --blue:#1769ff;
+    --green:#16845c;
+    --sidebar:248px;
+    --shadow:0 18px 55px rgba(20,28,38,.12);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;scroll-behavior:smooth}
+body{
+    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    background:var(--bg);color:var(--text);
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+
+.sidebar{
+    position:fixed;inset:0 auto 0 0;width:var(--sidebar);
+    background:#fff;border-right:1px solid var(--border);
+    display:flex;flex-direction:column;z-index:100;overflow:hidden;
+    transition:transform .28s ease;
+}
+.sidebar-header{height:68px;display:flex;align-items:center;padding:0 22px;border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:11px;font-size:15px;font-weight:760;letter-spacing:-.025em}
+.logo{width:28px;height:28px;border:2px solid var(--text);border-radius:8px;display:grid;place-items:center}
+.logo::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--blue)}
+.sidebar-nav{flex:1;padding:18px 12px;overflow:auto}
+.nav-group{margin-bottom:16px}
+.nav-label{padding:0 11px 7px;color:var(--muted);font-size:10px;font-weight:750;text-transform:uppercase;letter-spacing:.12em}
+.nav-item{
+    width:100%;min-height:36px;border:0;background:transparent;color:var(--muted);
+    border-radius:9px;padding:7px 11px;display:flex;align-items:center;gap:12px;
+    text-align:left;font-size:13px;line-height:1.1;transition:.16s;
+}
+.nav-item:hover{color:var(--text);background:var(--surface)}
+.nav-item.active{color:var(--text);background:var(--surface2);font-weight:700}
+.nav-icon{width:18px;height:18px;display:grid;place-items:center;flex:0 0 18px}
+.sidebar-footer{border-top:1px solid var(--border);padding:14px 12px}
+.profile{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px}
+.avatar{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:var(--surface2);font-size:12px;font-weight:750}
+.profile-name{font-size:12px;font-weight:700}.profile-sub{color:var(--muted);font-size:10px;margin-top:2px}
+.overlay{position:fixed;inset:0;background:rgba(15,20,25,.30);z-index:90;opacity:0;visibility:hidden;transition:.25s}
+.overlay.open{opacity:1;visibility:visible}
+
+.workspace{margin-left:var(--sidebar);min-height:100vh}
+.topbar{
+    height:68px;border-bottom:1px solid var(--border);display:flex;align-items:center;
+    justify-content:space-between;padding:0 30px;position:sticky;top:0;z-index:50;
+    background:rgba(255,255,255,.94);backdrop-filter:blur(16px)
+}
+.page-title{display:flex;align-items:center;gap:12px}.page-title strong{font-size:14px}.page-title span{color:var(--muted);font-size:12px}
+.status{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:11px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.mobile-menu{display:none;width:40px;height:40px;border:1px solid var(--border);border-radius:10px;background:#fff;place-items:center}
+
+.content{width:min(1100px,calc(100% - 44px));margin:auto;padding:44px 0 140px}
+.page{display:none}.page.active{display:block}
+.hero{display:flex;justify-content:space-between;gap:30px;align-items:flex-end;margin-bottom:32px}
+.eyebrow{color:var(--muted);font-size:10px;font-weight:750;letter-spacing:.13em;text-transform:uppercase}
+.hero h1{margin:10px 0 8px;font-size:42px;line-height:1;letter-spacing:-.055em}
+.hero p{margin:0;color:var(--muted);font-size:14px;line-height:1.55;max-width:650px}
+.hero-action{
+    border:1px solid var(--text);background:var(--text);color:#fff;border-radius:10px;
+    padding:12px 18px;font-size:12px;font-weight:700;white-space:nowrap
+}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.card{border:1px solid var(--border);border-radius:15px;background:#fff;padding:20px}
+.span3{grid-column:span 3}.span4{grid-column:span 4}.span6{grid-column:span 6}.span8{grid-column:span 8}.span12{grid-column:span 12}
+.card-head{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;margin-bottom:18px}
+.card-title{font-size:13px;font-weight:750}.card-sub{font-size:10px;color:var(--muted);margin-top:4px}
+.link{border:0;background:none;color:var(--blue);font-size:11px;font-weight:700;padding:0}
+.agent{display:grid;grid-template-columns:46px 1fr;gap:14px}.agent-avatar{width:46px;height:46px;border:1px solid var(--border);border-radius:13px;background:var(--surface);display:grid;place-items:center;font-size:11px;font-weight:800}
+.agent-text{font-size:13px;line-height:1.65}.agent-text p{margin:0 0 10px}.agent-text p:last-child{margin-bottom:0}
+.metric{font-size:31px;font-weight:760;letter-spacing:-.045em}.metric-label{font-size:10px;color:var(--muted);margin-top:4px}
+.bar{height:7px;background:#edf0f3;border-radius:20px;overflow:hidden;margin-top:16px}.bar span{display:block;height:100%;background:var(--blue);border-radius:20px}
+.tags{display:flex;flex-wrap:wrap;gap:7px}.tag{padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:999px;font-size:10px}
+.action-list{display:grid;gap:8px}.action{border:1px solid var(--border);background:#fff;border-radius:11px;padding:13px;text-align:left;display:flex;align-items:center;gap:12px;width:100%}
+.action:hover{background:var(--surface);border-color:#c8d0d8}.action-icon{width:30px;height:30px;border:1px solid var(--border);border-radius:8px;display:grid;place-items:center;font-size:11px;font-weight:750;flex:0 0 30px}
+.action strong{font-size:12px;display:block}.action small{font-size:10px;color:var(--muted);display:block;margin-top:3px;line-height:1.45}
+.mini-list{display:grid;gap:9px}.mini{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:10px;font-size:11px}.mini:first-child{border-top:0;padding-top:0}.muted{color:var(--muted)}
+.empty{border:1px dashed var(--border);border-radius:15px;padding:50px;text-align:center}.empty h2{margin:0 0 8px;font-size:20px}.empty p{margin:0;color:var(--muted);font-size:12px;line-height:1.6}
+
+.provider-card{display:block;color:inherit;transition:.16s}.provider-card:hover{transform:translateY(-1px);box-shadow:0 8px 25px rgba(20,28,38,.06)}.provider-card:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.provider-head{display:flex;align-items:center;gap:12px}.provider-avatar{width:44px;height:44px;border-radius:12px;background:var(--surface2);display:grid;place-items:center;font-size:12px;font-weight:800}
+.provider-name{font-size:13px;font-weight:750}.provider-type{font-size:10px;color:var(--muted);margin-top:3px}
+.provider-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:15px}.provider-pill{font-size:9px;padding:5px 8px;border-radius:999px;background:var(--surface);border:1px solid var(--border)}
+.provider-link{margin-top:15px;color:var(--blue);font-size:10px;font-weight:750}
+
+.filter-row{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}.filter-row input,.filter-row select{
+    border:1px solid var(--border);background:#fff;border-radius:10px;padding:10px 11px;font-size:11px;outline:0
+}.filter-row input{flex:1;min-width:220px}.filter-row select{min-width:180px}
+.data-count{font-size:10px;color:var(--muted);margin-bottom:12px}
+.taxonomy-list{display:grid;gap:8px;max-height:620px;overflow:auto}
+.taxonomy-item{border:1px solid var(--border);border-radius:11px;background:#fff;padding:13px}
+.taxonomy-item strong{font-size:12px}.taxonomy-item small{display:block;color:var(--muted);font-size:10px;line-height:1.5;margin-top:4px}
+.taxonomy-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.data-table-wrap{overflow:auto;border:1px solid var(--border);border-radius:12px}
+.data-table{width:100%;border-collapse:collapse;font-size:10px}.data-table th,.data-table td{padding:9px 10px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}.data-table th{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);background:var(--surface)}.data-table tr:last-child td{border-bottom:0}
+.badge{display:inline-block;border-radius:999px;padding:4px 7px;background:var(--surface);border:1px solid var(--border);font-size:9px}
+
+.lesson-header{margin-bottom:28px}.lesson-back{border:0;background:transparent;padding:0;margin-bottom:18px;color:var(--muted);font-size:11px;font-weight:700}.lesson-back:hover{color:var(--text)}
+.lesson-title{font-size:38px;line-height:1.05;letter-spacing:-.05em;margin:8px 0}.lesson-description{max-width:680px;color:var(--muted);font-size:14px;line-height:1.6}
+.lesson-progress{height:5px;background:var(--surface2);border-radius:20px;overflow:hidden;margin-top:22px}.lesson-progress span{display:block;width:25%;height:100%;background:var(--text);border-radius:20px;transition:width .25s ease}
+.lesson-layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:14px}.lesson-main{border:1px solid var(--border);border-radius:15px;padding:24px;background:#fff}.lesson-sidebar{display:grid;align-content:start;gap:14px}.lesson-side-card{border:1px solid var(--border);border-radius:15px;padding:18px;background:#fff}.lesson-side-title{font-size:11px;font-weight:750;margin-bottom:12px}.lesson-side-card p{margin:0;color:var(--muted);font-size:10px;line-height:1.6}
+.lesson-section{padding:26px 0;border-top:1px solid var(--border)}.lesson-section:first-child{border-top:0;padding-top:0}.lesson-number{color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:9px}.lesson-section h2{margin:0 0 10px;font-size:22px;letter-spacing:-.035em}.lesson-section p{max-width:720px;color:var(--muted);font-size:13px;line-height:1.7}
+.lesson-callout{margin-top:18px;padding:17px;background:var(--surface);border:1px solid var(--border);border-radius:12px}.lesson-callout strong{display:block;font-size:12px;margin-bottom:5px}.lesson-callout span{color:var(--muted);font-size:11px;line-height:1.6}
+.lesson-question{margin-top:25px;padding-top:20px;border-top:1px solid var(--border)}.lesson-question-title{font-size:11px;font-weight:750;margin-bottom:10px}.lesson-question-actions{display:flex;flex-wrap:wrap;gap:7px}.lesson-question-actions button{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:8px 11px;font-size:10px;color:var(--text)}
+.lesson-footer{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-top:25px;padding-top:20px;border-top:1px solid var(--border)}
+.lesson-complete{border:1px solid var(--text);background:var(--text);color:#fff;border-radius:9px;padding:11px 15px;font-size:11px;font-weight:700}
+
+.chat-footer{
+    position:fixed;bottom:16px;left:calc(var(--sidebar) + (100vw - var(--sidebar))/2);
+    transform:translateX(-50%);width:min(760px,calc(100vw - var(--sidebar) - 44px));z-index:80
+}
+.chat-window{
+    position:absolute;left:calc(100% + 12px);right:auto;bottom:0;width:760px;max-width:calc(100vw - var(--sidebar) - 44px);
+    display:none;background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:18px
+}
+.chat-window.open{display:block}.chat-window strong{font-size:12px}.chat-window p{font-size:11px;color:var(--muted);line-height:1.5;margin:8px 0 0}
+.chat-shell{display:flex;align-items:center;gap:8px;padding:8px;background:rgba(255,255,255,.96);border:1px solid #c8d0d8;border-radius:16px;box-shadow:var(--shadow);backdrop-filter:blur(16px)}
+.chat-btn{width:42px;height:42px;flex:0 0 42px;border-radius:11px}.plus{background:#fff;border:1px solid #c8d0d8;font-size:20px}.send{background:var(--text);color:#fff;border:1px solid var(--text);font-size:18px}
+.chat-input{flex:1;min-width:0;border:0;outline:0;background:transparent;font-size:13px}.chat-input::placeholder{color:var(--muted)}
+
+.modal{position:fixed;inset:0;background:rgba(15,20,25,.32);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}.modal.open{display:flex}
+.modal-card{width:min(680px,100%);max-height:88vh;overflow:auto;background:#fff;border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);padding:22px}
+.modal-head{display:flex;justify-content:space-between;gap:15px;align-items:flex-start}.modal-close{border:1px solid var(--border);background:#fff;border-radius:9px;width:34px;height:34px}.modal-title{font-size:20px;font-weight:760;letter-spacing:-.035em}.modal-sub{color:var(--muted);font-size:11px;line-height:1.5;margin-top:5px}
+.taxonomy-item{
+    cursor:pointer;
+    transition:border-color .16s,background .16s,transform .16s;
+}
+.taxonomy-item:hover{
+    background:var(--surface);
+    border-color:#c8d0d8;
+    transform:translateY(-1px);
+}
+.taxonomy-item .taxonomy-arrow{
+    float:right;
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+}
+.taxonomy-detail-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+    margin-top:16px;
+}
+.taxonomy-detail-card{
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px;
+    background:#fff;
+}
+.taxonomy-detail-card strong{
+    display:block;
+    font-size:12px;
+}
+.taxonomy-detail-card small{
+    display:block;
+    color:var(--muted);
+    font-size:10px;
+    line-height:1.5;
+    margin-top:4px;
+}
+.taxonomy-map{
+    display:grid;
+    gap:8px;
+    margin-top:16px;
+}
+.taxonomy-map-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:12px;
+    border:1px solid var(--border);
+    border-radius:11px;
+    background:var(--surface);
+    cursor:pointer;
+}
+.taxonomy-map-item:hover{
+    background:var(--surface-2);
+}
+.taxonomy-map-item strong{
+    font-size:11px;
+}
+.taxonomy-map-item small{
+    display:block;
+    color:var(--muted);
+    font-size:9px;
+    margin-top:3px;
+}
+.taxonomy-path{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    align-items:center;
+    margin-top:10px;
+}
+.taxonomy-path span{
+    padding:5px 8px;
+    border:1px solid var(--border);
+    border-radius:999px;
+    background:var(--surface);
+    font-size:9px;
+}
+.taxonomy-path .path-arrow{
+    border:0;
+    background:transparent;
+    padding:0 1px;
+    color:var(--muted);
+}
+.taxonomy-detail-back{
+    border:0;
+    background:transparent;
+    padding:0;
+    color:var(--muted);
+    font-size:10px;
+    font-weight:700;
+    margin-top:16px;
+}
+.taxonomy-detail-back:hover{color:var(--text)}
+@media(max-width:600px){
+    .taxonomy-detail-grid{grid-template-columns:1fr}
+}
+
+
+@media(max-width:800px){
+    .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.workspace{margin-left:0}
+    .mobile-menu{display:grid}.topbar{padding:0 16px}.content{width:calc(100% - 24px);padding-top:32px}
+    .hero{display:block}.hero-action{margin-top:18px}.span3,.span4,.span6,.span8{grid-column:span 12}
+    .chat-footer{left:50%;width:calc(100% - 22px)}.status{display:none}.hero h1{font-size:34px}.lesson-title{font-size:32px}
+    .lesson-layout{grid-template-columns:1fr}.lesson-sidebar{grid-template-columns:repeat(2,1fr)}
+    .chat-window{left:0;right:0;bottom:64px;width:100%;max-width:none}
+    .taxonomy-grid{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+    .lesson-sidebar{grid-template-columns:1fr}.lesson-main{padding:18px}.lesson-footer{align-items:stretch;flex-direction:column}
+}
+svg{width:16px;height:16px}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="brand"><div class="logo"></div>Costia</div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <div class="nav-group">
+            <div class="nav-label">Workspace</div>
+            <button class="nav-item active" data-page="home"><span class="nav-icon">⌂</span>Home</button>
+            <button class="nav-item" data-page="wellness"><span class="nav-icon">◉</span>My Wellness</button>
+            <button class="nav-item" data-page="cabinet"><span class="nav-icon">▤</span>My Cabinet</button>
+            <button class="nav-item" data-page="providers"><span class="nav-icon">□</span>Providers</button>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-label">Intelligence</div>
+            <button class="nav-item" data-page="recommendations"><span class="nav-icon">✦</span>Recommendations</button>
+            <button class="nav-item" data-page="plans"><span class="nav-icon">□</span>Plans</button>
+            <button class="nav-item" data-page="reminders"><span class="nav-icon">◷</span>Reminders</button>
+            <button class="nav-item" data-page="progress"><span class="nav-icon">↗</span>Progress</button>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-label">Learn</div>
+            <button class="nav-item" data-page="academy"><span class="nav-icon">▥</span>Wellness Academy</button>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-label">Account</div>
+            <button class="nav-item" data-page="profile"><span class="nav-icon">○</span>Profile</button>
+            <button class="nav-item" data-page="settings"><span class="nav-icon">⚙</span>Settings</button>
+        </div>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="profile">
+            <div class="avatar">DE</div>
+            <div><div class="profile-name">Wellness Profile</div><div class="profile-sub">Personal account</div></div>
+        </div>
+    </div>
+</aside>
+
+<div class="overlay" id="overlay"></div>
+
+<section class="workspace">
+<header class="topbar">
+    <div class="page-title">
+        <button class="mobile-menu" id="menu" aria-label="Open navigation">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <div><strong id="pageTitle">Wellness Agent</strong><span id="pageCrumb"> / Home</span></div>
+    </div>
+    <div class="status"><span class="dot"></span>Agent ready</div>
+</header>
+
+<main class="content">
+
+<section class="page active" id="home">
+    <div class="hero">
+        <div>
+            <div class="eyebrow">Personal Wellness Workspace</div>
+            <h1>Good to see you.</h1>
+            <p>Your wellness agent organizes goals, concerns, products, providers and learning into one personal workspace.</p>
+        </div>
+        <button class="hero-action" onclick="showPage('wellness')">Review My Wellness</button>
+    </div>
+
+    <div class="grid">
+        <div class="card span8">
+            <div class="card-head"><div><div class="card-title">Agent briefing</div><div class="card-sub">Your current starting point</div></div><button class="link" onclick="showPage('wellness')">View profile</button></div>
+            <div class="agent">
+                <div class="agent-avatar">WA</div>
+                <div class="agent-text">
+                    <p><strong>Welcome to your wellness workspace.</strong></p>
+                    <p>I'll help organize your goals, concerns, products, routines and provider information.</p>
+                    <p>Recommendations are educational and organizational in this demo. A production system would apply the configured safety gates before surfacing individualized product guidance.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card span4">
+            <div class="card-head"><div><div class="card-title">Profile readiness</div><div class="card-sub">Information available</div></div></div>
+            <div class="metric">42%</div><div class="metric-label">Initial profile completed</div>
+            <div class="bar"><span style="width:42%"></span></div>
+        </div>
+
+        <div class="card span4">
+            <div class="card-head"><div><div class="card-title">Primary focus</div><div class="card-sub">From onboarding</div></div></div>
+            <div class="metric">Sleep</div><div class="metric-label">Sleep quality and daily recovery</div>
+        </div>
+
+        <div class="card span4">
+            <div class="card-head"><div><div class="card-title">Cabinet</div><div class="card-sub">Products you're tracking</div></div></div>
+            <div class="metric">0</div><div class="metric-label">Products currently added</div>
+        </div>
+
+        <div class="card span4">
+            <div class="card-head"><div><div class="card-title">Academy</div><div class="card-sub">Taxonomy loaded</div></div></div>
+            <div class="metric" id="academyMetric">0</div><div class="metric-label">Wellness goals in demo taxonomy</div>
+        </div>
+
+        <div class="card span6">
+            <div class="card-head"><div><div class="card-title">Suggested next actions</div><div class="card-sub">Based on your starting profile</div></div></div>
+            <div class="action-list">
+                <button class="action" onclick="showPage('wellness')"><span class="action-icon">1</span><span><strong>Complete my wellness profile</strong><small>Add more context to improve future recommendations.</small></span></button>
+                <button class="action" onclick="showPage('academy')"><span class="action-icon">2</span><span><strong>Explore Wellness Academy</strong><small>Browse the full goal, concern and ingredient taxonomy.</small></span></button>
+                <button class="action" onclick="showPage('providers')"><span class="action-icon">3</span><span><strong>Find a provider</strong><small>Open the provider directory and provider profile workflow.</small></span></button>
+                <button class="action" onclick="showPage('cabinet')"><span class="action-icon">4</span><span><strong>Add products to My Cabinet</strong><small>Give the agent visibility into what you already use.</small></span></button>
+            </div>
+        </div>
+
+        <div class="card span6">
+            <div class="card-head"><div><div class="card-title">Starting profile</div><div class="card-sub">Current onboarding data</div></div></div>
+            <div class="tags"><span class="tag">Sleep</span><span class="tag">Sleep quality</span><span class="tag">Morning tiredness</span><span class="tag">Daily routine</span></div>
+        </div>
+    </div>
+</section>
+
+<section class="page" id="wellness">
+    <div class="hero"><div><div class="eyebrow">My Wellness</div><h1>Your wellness profile.</h1><p>The agent organizes what you've told it into goals, concerns and personal context.</p></div><button class="hero-action" onclick="editProfile()">Edit Profile</button></div>
+    <div class="grid">
+        <div class="card span8"><div class="card-head"><div><div class="card-title">Agent summary</div><div class="card-sub">What I understand right now</div></div><span class="tag">Current</span></div>
+            <div class="agent"><div class="agent-avatar">WA</div><div class="agent-text"><p><strong>Your current primary focus is sleep.</strong></p><p>You're exploring ways to improve sleep quality and build a more consistent daily wellness routine.</p><p>Your Academy starts with sleep fundamentals before product discovery.</p></div></div>
+        </div>
+        <div class="card span4"><div class="card-head"><div><div class="card-title">Profile completeness</div><div class="card-sub">Information available</div></div></div><div class="metric">42%</div><div class="metric-label">Ready for refinement</div><div class="bar"><span style="width:42%"></span></div></div>
+        <div class="card span6"><div class="card-head"><div><div class="card-title">Goals</div><div class="card-sub">What you want to work on</div></div></div><div class="action-list"><button class="action"><span class="action-icon">1</span><span><strong>Sleep</strong><small>Primary wellness goal</small></span><span class="tag" style="margin-left:auto">Primary</span></button></div></div>
+        <div class="card span6"><div class="card-head"><div><div class="card-title">Concerns</div><div class="card-sub">Specific areas connected to your goal</div></div></div><div class="tags"><span class="tag">Sleep quality</span><span class="tag">Morning tiredness</span><span class="tag">Inconsistent routine</span></div></div>
+        <div class="card span12"><div class="card-head"><div><div class="card-title">Continue learning</div><div class="card-sub">Your agent recommends starting with the Wellness Academy.</div></div></div><button class="action" onclick="openLesson('sleep-basics')"><span class="action-icon">A</span><span><strong>Understanding Sleep</strong><small>Begin your personalized Academy lesson.</small></span><span style="margin-left:auto">→</span></button></div>
+    </div>
+</section>
+
+<section class="page" id="cabinet">
+    <div class="hero"><div><div class="eyebrow">My Cabinet</div><h1>What you already have.</h1><p>Your cabinet lets the agent consider products you already own before suggesting something new.</p></div><button class="hero-action" onclick="addProduct()">Add Product</button></div>
+    <div class="empty"><h2>Your cabinet is empty.</h2><p>Add products manually or identify products from the available catalog.<br>The agent can then consider ingredients, serving information, goals and safety rules.</p></div>
+</section>
+
+<section class="page" id="providers">
+    <div class="hero">
+        <div><div class="eyebrow">Provider Directory</div><h1>Find the right provider.</h1><p>Provider profiles give the wellness agent a structured place to understand professional expertise, services and areas of focus.</p></div>
+        <a class="hero-action" href="profile.html">Open Provider Profile</a>
+    </div>
+
+    <div class="grid">
+        <a class="card span4 provider-card" href="profile.html" aria-label="Open Dr. Riley Morgan provider profile">
+            <div class="provider-head"><div class="provider-avatar">DR</div><div><div class="provider-name">Dr. Riley Morgan</div><div class="provider-type">Primary Care</div></div></div>
+            <div class="provider-meta"><span class="provider-pill">Preventive Care</span><span class="provider-pill">Wellness</span><span class="provider-pill">Nutrition</span></div>
+            <div class="provider-link">View provider profile →</div>
+        </a>
+        <a class="card span4 provider-card" href="profile.html" aria-label="Open Laura Chen provider profile">
+            <div class="provider-head"><div class="provider-avatar">LC</div><div><div class="provider-name">Laura Chen, RD</div><div class="provider-type">Registered Dietitian</div></div></div>
+            <div class="provider-meta"><span class="provider-pill">Nutrition</span><span class="provider-pill">Metabolic Health</span><span class="provider-pill">Weight Management</span></div>
+            <div class="provider-link">View provider profile →</div>
+        </a>
+        <a class="card span4 provider-card" href="profile.html" aria-label="Open Jordan Miles provider profile">
+            <div class="provider-head"><div class="provider-avatar">JM</div><div><div class="provider-name">Jordan Miles, PT</div><div class="provider-type">Physical Therapist</div></div></div>
+            <div class="provider-meta"><span class="provider-pill">Mobility</span><span class="provider-pill">Recovery</span><span class="provider-pill">Exercise</span></div>
+            <div class="provider-link">View provider profile →</div>
+        </a>
+        <div class="card span12">
+            <div class="card-head"><div><div class="card-title">Provider workflow</div><div class="card-sub">Prototype structure for the provider layer</div></div><a class="link" href="profile.html">Provider profile →</a></div>
+            <div class="grid">
+                <div class="card span3"><div class="card-title">Profile</div><div class="card-sub">Credentials, specialties and bio</div></div>
+                <div class="card span3"><div class="card-title">Expertise</div><div class="card-sub">Map provider expertise to taxonomy goals</div></div>
+                <div class="card span3"><div class="card-title">Services</div><div class="card-sub">Appointments, programs and services</div></div>
+                <div class="card span3"><div class="card-title">Agent context</div><div class="card-sub">Provider-approved information for the agent</div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="page" id="recommendations">
+    <div class="hero"><div><div class="eyebrow">Recommendations</div><h1>Relevant options.</h1><p>Recommendations connect goals and concerns to ingredients and products after configured safety gates are evaluated.</p></div></div>
+    <div class="grid">
+        <div class="card span4"><div class="card-title">Goal relevance</div><div class="metric">—</div><div class="metric-label">Awaiting product catalog data</div></div>
+        <div class="card span4"><div class="card-title">Safety status</div><div class="metric">READY</div><div class="metric-label">Gate structure available</div></div>
+        <div class="card span4"><div class="card-title">Catalog matches</div><div class="metric">0</div><div class="metric-label">Products mapped</div></div>
+        <div class="card span12"><div class="empty"><h2>Recommendation engine waiting for catalog mapping.</h2><p>The demo taxonomy already contains the health goal, concern and ingredient relationship layer.</p></div></div>
+    </div>
+</section>
+
+<section class="page" id="plans">
+    <div class="hero"><div><div class="eyebrow">Plans</div><h1>Build a wellness plan.</h1><p>Plans turn selected goals into organized routines, education and tracking.</p></div><button class="hero-action" onclick="createPlan()">Create Plan</button></div>
+    <div class="empty"><h2>No active plans.</h2><p>Your first plan will be generated from wellness goals, available context and selected priorities.</p></div>
+</section>
+
+<section class="page" id="reminders">
+    <div class="hero"><div><div class="eyebrow">Reminders</div><h1>Stay consistent.</h1><p>Reminders connect routines, products, plans and progress tracking.</p></div><button class="hero-action" onclick="addReminder()">Add Reminder</button></div>
+    <div class="empty"><h2>No reminders yet.</h2><p>Once a plan or routine exists, reminders can be created around the activities you choose to track.</p></div>
+</section>
+
+<section class="page" id="progress">
+    <div class="hero"><div><div class="eyebrow">Progress</div><h1>See what changes.</h1><p>Progress provides a simple history of routines, goals and self-reported outcomes.</p></div></div>
+    <div class="grid">
+        <div class="card span4"><div class="card-title">Goals tracked</div><div class="metric">0</div></div>
+        <div class="card span4"><div class="card-title">Check-ins</div><div class="metric">0</div></div>
+        <div class="card span4"><div class="card-title">Active streak</div><div class="metric">0</div></div>
+        <div class="card span12"><div class="empty"><h2>Your progress timeline will appear here.</h2><p>Tracking will show changes over time based on information you choose to record.</p></div></div>
+    </div>
+</section>
+
+<section class="page" id="academy">
+    <div class="hero">
+        <div><div class="eyebrow">Wellness Academy</div><h1>Learn with your agent.</h1><p>The full taxonomy from the uploaded seed is available in this demo: goals, concerns, ingredients and their relationships.</p></div>
+        <button class="hero-action" onclick="openLesson('sleep-basics')">Start Learning</button>
+    </div>
+
+    <div class="grid">
+        <div class="card span3"><div class="card-title">Health goals</div><div class="metric" id="goalCount">0</div><div class="metric-label">Taxonomy categories</div></div>
+        <div class="card span3"><div class="card-title">Concerns</div><div class="metric" id="concernCount">0</div><div class="metric-label">Mapped concerns</div></div>
+        <div class="card span3"><div class="card-title">Ingredients</div><div class="metric" id="ingredientCount">0</div><div class="metric-label">Ingredient records</div></div>
+        <div class="card span3"><div class="card-title">Mappings</div><div class="metric" id="mappingCount">0</div><div class="metric-label">Goal + concern relationships</div></div>
+
+        <div class="card span12">
+            <div class="card-head"><div><div class="card-title">Taxonomy explorer</div><div class="card-sub">All records are embedded in this demo for UI simulation.</div></div></div>
+            <div class="filter-row">
+                <input id="academySearch" placeholder="Search goals, concerns, ingredients or descriptions...">
+                <select id="academyGoalFilter"><option value="">All goals</option></select>
+                <select id="academyTypeFilter"><option value="">All ingredient types</option></select>
+            </div>
+            <div class="data-count" id="academyResultCount"></div>
+            <div class="taxonomy-list" id="academyResults"></div>
+        </div>
+
+        <div class="card span6">
+            <div class="card-head"><div><div class="card-title">Learning guide</div><div class="card-sub">Personalized by your wellness profile</div></div><span class="tag">AI Agent</span></div>
+            <div class="agent"><div class="agent-avatar">WA</div><div class="agent-text">
+                <p><strong>Education comes before product recommendation.</strong></p>
+                <p>The Academy explains the vocabulary and relationships used by the wellness intelligence layer.</p>
+                <p>The taxonomy is organizational data, not a diagnostic or treatment engine.</p>
+            </div></div>
+        </div>
+
+        <div class="card span6">
+            <div class="card-head"><div><div class="card-title">Sleep starter lesson</div><div class="card-sub">Connected to the demo profile</div></div></div>
+            <button class="action" onclick="openLesson('sleep-basics')"><span class="action-icon">01</span><span><strong>Understanding Sleep</strong><small>Explore sleep, its concerns and mapped ingredients.</small></span><span style="margin-left:auto">→</span></button>
+        </div>
+    </div>
+</section>
+
+<section class="page" id="lesson">
+    <div class="lesson-header">
+        <button class="lesson-back" onclick="showPage('academy')">← Back to Wellness Academy</button>
+        <div class="eyebrow">Academy Lesson</div>
+        <h1 class="lesson-title" id="lessonTitle">Understanding Sleep</h1>
+        <p class="lesson-description" id="lessonDescription">Learn the fundamentals of sleep, sleep quality and daily recovery.</p>
+        <div class="lesson-progress"><span id="lessonProgress"></span></div>
+    </div>
+
+    <div class="lesson-layout">
+        <article class="lesson-main">
+            <div id="lessonContent">
+                <div class="lesson-section"><div class="lesson-number">Section 01</div><h2>What is sleep?</h2><p>Sleep is a recurring period of rest during which the body and brain go through a number of biological processes. Sleep is not simply inactive time.</p><div class="lesson-callout"><strong>Agent perspective</strong><span>For your wellness profile, we're interested in how you experience sleep and how it relates to your broader routine.</span></div></div>
+                <div class="lesson-section"><div class="lesson-number">Section 02</div><h2>Sleep quality</h2><p>Sleep quality can involve more than the number of hours you spend asleep. Consistency, difficulty falling asleep, interruptions and how you feel after waking can all provide useful context.</p><div class="lesson-callout"><strong>What this means for you</strong><span>Your current profile identifies sleep quality as one of your concerns.</span></div></div>
+                <div class="lesson-section"><div class="lesson-number">Section 03</div><h2>Your daily routine</h2><p>Sleep doesn't exist in isolation. Your daily schedule, activity, environment and habits can provide useful context when thinking about your wellness goals.</p><div class="lesson-callout"><strong>Agent next step</strong><span>The next part of your profile will collect additional routine information so the agent has more context.</span></div></div>
+                <div class="lesson-section"><div class="lesson-number">Section 04</div><h2>What should you track?</h2><p>Before making a recommendation, the agent can help you establish what information is actually useful to track.</p><div class="tags"><span class="tag">Sleep duration</span><span class="tag">Sleep consistency</span><span class="tag">Morning experience</span><span class="tag">Daily routine</span></div></div>
+                <div class="lesson-section"><div class="lesson-number">Section 05</div><h2>Your takeaway</h2><p>The purpose of the Academy is to help you understand the information the agent uses when helping you make decisions.</p><div class="lesson-callout"><strong>Your current wellness outline</strong><span>Primary goal: Sleep. Current concerns: sleep quality, morning tiredness and an inconsistent routine.</span></div></div>
+                <div class="lesson-question"><div class="lesson-question-title">Ask the agent about this lesson</div><div class="lesson-question-actions">
+                    <button onclick="askAcademy('Why does sleep quality matter?')">Why does sleep quality matter?</button>
+                    <button onclick="askAcademy('What should I track?')">What should I track?</button>
+                    <button onclick="askAcademy('How does my routine affect this?')">How does my routine affect this?</button>
+                    <button onclick="askAcademy('Explain this more simply.')">Explain this more simply</button>
+                </div></div>
+                <div class="lesson-footer"><button class="lesson-back" onclick="showPage('academy')">Back to Academy</button><button class="lesson-complete" onclick="completeLesson()">Complete Lesson</button></div>
+            </div>
+        </article>
+        <aside class="lesson-sidebar">
+            <div class="lesson-side-card"><div class="lesson-side-title">Your goal</div><p>Sleep</p></div>
+            <div class="lesson-side-card"><div class="lesson-side-title">Related concerns</div><p>Sleep quality<br><br>Morning tiredness<br><br>Inconsistent routine</p></div>
+            <div class="lesson-side-card"><div class="lesson-side-title">Lesson status</div><p id="lessonStatus">In progress</p></div>
+            <div class="lesson-side-card"><div class="lesson-side-title">Agent note</div><p>Education comes before product recommendation.</p></div>
+        </aside>
+    </div>
+</section>
+
+<section class="page" id="profile">
+    <div class="hero"><div><div class="eyebrow">Profile</div><h1>Your account.</h1><p>Manage personal information and preferences used by the wellness workspace.</p></div></div>
+    <div class="card"><div class="mini-list">
+        <div class="mini"><span>Name</span><strong>David Evans</strong></div>
+        <div class="mini"><span>Account type</span><strong>Personal</strong></div>
+        <div class="mini"><span>Wellness profile</span><strong>In progress</strong></div>
+    </div></div>
+</section>
+
+<section class="page" id="settings">
+    <div class="hero"><div><div class="eyebrow">Settings</div><h1>Workspace settings.</h1><p>Application preferences, privacy controls and agent behavior.</p></div></div>
+    <div class="card"><div class="mini-list">
+        <div class="mini"><span>Agent recommendations</span><strong>Enabled</strong></div>
+        <div class="mini"><span>Product suggestions</span><strong>Require safety gate</strong></div>
+        <div class="mini"><span>Progress tracking</span><strong>Enabled</strong></div>
+        <div class="mini"><span>Notifications</span><strong>Not configured</strong></div>
+    </div></div>
+</section>
+
+</main>
+</section>
+
+<div class="chat-footer">
+    <div class="chat-window" id="chatWindow">
+        <div class="modal-head"><strong>Wellness Agent</strong><button class="modal-close" onclick="closeChat()">×</button></div>
+        <p id="chatResponse">Ask about your wellness profile, Academy lessons, cabinet, providers or recommendations.</p>
+    </div>
+    <div class="chat-shell">
+        <button class="chat-btn plus" id="plus" aria-label="Agent tools">+</button>
+        <input class="chat-input" id="chatInput" type="text" placeholder="Ask your wellness agent...">
+        <button class="chat-btn send" id="send" aria-label="Send">→</button>
+    </div>
+</div>
+
+
+<div class="modal" id="taxonomyModal" onclick="if(event.target===this)closeTaxonomyModal()">
+    <div class="modal-card">
+        <div class="modal-head">
+            <div>
+                <div class="modal-title" id="taxonomyModalTitle">Taxonomy detail</div>
+                <div class="modal-sub" id="taxonomyModalSub">Goal → Concern → Ingredient relationship</div>
+            </div>
+            <button class="modal-close" onclick="closeTaxonomyModal()" aria-label="Close">×</button>
+        </div>
+        <div id="taxonomyModalBody"></div>
+    </div>
+</div>
+
+<div class="modal" id="providerModal">
+    <div class="modal-card">
+        <div class="modal-head"><div><div class="modal-title">Provider profile</div><div class="modal-sub">Provider data model preview</div></div><button class="modal-close" onclick="closeProviderModal()">×</button></div>
+        <div style="margin-top:20px" class="grid">
+            <div class="card span6"><div class="card-title">Credentials</div><div class="card-sub">Name, license, specialty and professional role.</div></div>
+            <div class="card span6"><div class="card-title">Expertise mapping</div><div class="card-sub">Connect provider expertise to Academy goals and concerns.</div></div>
+            <div class="card span12"><div class="card-title">Agent permissions</div><div class="card-sub">Future provider controls can define what information the agent may use or display.</div></div>
+        </div>
+        <a class="hero-action" style="display:inline-block;margin-top:18px" href="profile.html">Open full provider profile</a>
+    </div>
+</div>
+
+<script>
+const TAXONOMY = {"goals":[{"id":"HG01","name":"Sleep & Relaxation","slug":"sleep-relaxation","description":"Sleep quality, relaxation and evening nutritional support","icon":"😴","sort":1},{"id":"HG02","name":"Energy & Vitality","slug":"energy-vitality","description":"Energy metabolism, nutrient intake and everyday vitality","icon":"⚡","sort":2},{"id":"HG03","name":"Brain & Cognitive","slug":"brain-cognitive","description":"Memory, focus and cognitive wellness","icon":"🧠","sort":3},{"id":"HG04","name":"Heart & Cardiovascular","slug":"heart-cardiovascular","description":"Cardiovascular and circulatory nutritional support","icon":"❤️","sort":4},{"id":"HG05","name":"Immune Support","slug":"immune-support","description":"Nutritional support for normal immune function","icon":"🛡️","sort":5},{"id":"HG06","name":"Digestive & Gut Health","slug":"digestive-gut-health","description":"Digestion, gut health, fiber and regularity","icon":"🥗","sort":6},{"id":"HG07","name":"Bones & Minerals","slug":"bones-minerals","description":"Bone and mineral nutrition","icon":"🦴","sort":7},{"id":"HG08","name":"Joints & Mobility","slug":"joints-mobility","description":"Joint, connective-tissue and mobility support","icon":"🦵","sort":8},{"id":"HG09","name":"Muscle & Recovery","slug":"muscle-recovery","description":"Muscle nutrition, exercise and recovery","icon":"💪","sort":9},{"id":"HG10","name":"Skin, Hair & Nails","slug":"skin-hair-nails","description":"Nutritional support for skin, hair and nails","icon":"✨","sort":10},{"id":"HG11","name":"Women's Health","slug":"womens-health","description":"Women's nutritional and life-stage support","icon":"👩","sort":11},{"id":"HG12","name":"Men's Health","slug":"mens-health","description":"Men's nutritional support","icon":"👨","sort":12},{"id":"HG13","name":"Healthy Aging","slug":"healthy-aging","description":"General nutritional support associated with healthy aging","icon":"🌱","sort":13},{"id":"HG14","name":"Stress & Mood","slug":"stress-mood","description":"Everyday stress management, relaxation and emotional-wellness support","icon":"🧘","sort":14},{"id":"HG15","name":"Weight & Metabolic Health","slug":"weight-metabolic-health","description":"Nutrition, satiety, metabolic and healthy weight-management support","icon":"⚖️","sort":15}],"concerns":[{"id":"C001","goalId":"HG01","name":"Difficulty falling asleep","slug":"difficulty-falling-asleep","description":"Occasional difficulty getting to sleep","sort":1},{"id":"C002","goalId":"HG01","name":"Staying asleep","slug":"staying-asleep","description":"Support for an evening routine and sleep continuity","sort":2},{"id":"C003","goalId":"HG01","name":"Sleep routine","slug":"sleep-routine","description":"Nutritional support for a consistent bedtime routine","sort":3},{"id":"C004","goalId":"HG01","name":"Evening relaxation","slug":"evening-relaxation","description":"Relaxation and winding down before bedtime","sort":4},{"id":"C005","goalId":"HG02","name":"Daily energy","slug":"daily-energy","description":"Nutritional support for normal energy metabolism","sort":1},{"id":"C006","goalId":"HG02","name":"Exercise energy","slug":"exercise-energy","description":"Nutritional support around physical activity","sort":2},{"id":"C007","goalId":"HG02","name":"Physical performance","slug":"physical-performance","description":"Nutrition supporting normal physical performance","sort":3},{"id":"C008","goalId":"HG02","name":"General vitality","slug":"general-vitality","description":"Broad nutritional support for everyday vitality","sort":4},{"id":"C009","goalId":"HG03","name":"Memory support","slug":"memory-support","description":"Cognitive and memory wellness","sort":1},{"id":"C010","goalId":"HG03","name":"Focus & concentration","slug":"focus-concentration","description":"Focus and cognitive performance","sort":2},{"id":"C011","goalId":"HG03","name":"Mental performance","slug":"mental-performance","description":"Nutritional support for cognitive performance","sort":3},{"id":"C012","goalId":"HG03","name":"Healthy brain aging","slug":"healthy-brain-aging","description":"Nutritional support associated with healthy brain aging","sort":4},{"id":"C013","goalId":"HG04","name":"General heart health","slug":"general-heart-health","description":"General cardiovascular nutritional support","sort":1},{"id":"C014","goalId":"HG04","name":"Cardiovascular nutrition","slug":"cardiovascular-nutrition","description":"Nutrition associated with cardiovascular wellness","sort":2},{"id":"C015","goalId":"HG04","name":"Cholesterol support","slug":"cholesterol-support","description":"Nutritional support associated with healthy cholesterol levels","sort":3},{"id":"C016","goalId":"HG04","name":"Circulatory support","slug":"circulatory-support","description":"Nutritional support associated with normal circulation","sort":4},{"id":"C017","goalId":"HG05","name":"General immune support","slug":"general-immune-support","description":"Nutritional support for normal immune function","sort":1},{"id":"C018","goalId":"HG05","name":"Seasonal nutritional support","slug":"seasonal-nutritional-support","description":"Nutrients commonly used during seasonal wellness routines","sort":2},{"id":"C019","goalId":"HG05","name":"Antioxidant support","slug":"antioxidant-support","description":"Nutritional antioxidant support","sort":3},{"id":"C020","goalId":"HG06","name":"Gut health","slug":"gut-health","description":"General digestive and microbiome wellness","sort":1},{"id":"C021","goalId":"HG06","name":"Digestive support","slug":"digestive-support","description":"Nutritional support for normal digestion","sort":2},{"id":"C022","goalId":"HG06","name":"Regularity","slug":"regularity","description":"Fiber and nutritional support for regularity","sort":3},{"id":"C023","goalId":"HG06","name":"Microbiome support","slug":"microbiome-support","description":"Probiotic and prebiotic nutrition","sort":4},{"id":"C024","goalId":"HG07","name":"Bone nutrition","slug":"bone-nutrition","description":"Nutrients involved in normal bone maintenance","sort":1},{"id":"C025","goalId":"HG07","name":"Calcium intake","slug":"calcium-intake","description":"Support for dietary calcium intake","sort":2},{"id":"C026","goalId":"HG07","name":"Vitamin D intake","slug":"vitamin-d-intake","description":"Support for dietary vitamin D intake","sort":3},{"id":"C027","goalId":"HG07","name":"Mineral nutrition","slug":"mineral-nutrition","description":"Broad mineral nutrition","sort":4},{"id":"C028","goalId":"HG08","name":"Joint support","slug":"joint-support","description":"Nutritional support for joints and connective tissue","sort":1},{"id":"C029","goalId":"HG08","name":"Mobility","slug":"mobility","description":"Nutritional support associated with mobility","sort":2},{"id":"C030","goalId":"HG08","name":"Connective tissue","slug":"connective-tissue","description":"Nutrients associated with connective tissue structure","sort":3},{"id":"C031","goalId":"HG09","name":"Muscle nutrition","slug":"muscle-nutrition","description":"Nutrients supporting normal muscle function","sort":1},{"id":"C032","goalId":"HG09","name":"Exercise recovery","slug":"exercise-recovery","description":"Nutrition around exercise recovery","sort":2},{"id":"C033","goalId":"HG09","name":"Strength & performance","slug":"strength-performance","description":"Nutrition supporting training and performance","sort":3},{"id":"C034","goalId":"HG09","name":"Hydration","slug":"hydration","description":"Electrolyte and fluid-support nutrition","sort":4},{"id":"C035","goalId":"HG10","name":"Hair health","slug":"hair-health","description":"Nutritional support for normal hair structure","sort":1},{"id":"C036","goalId":"HG10","name":"Skin health","slug":"skin-health","description":"Nutritional support for normal skin structure","sort":2},{"id":"C037","goalId":"HG10","name":"Nail health","slug":"nail-health","description":"Nutritional support for normal nail structure","sort":3},{"id":"C038","goalId":"HG10","name":"Collagen support","slug":"collagen-support","description":"Nutrients associated with collagen formation and structure","sort":4},{"id":"C039","goalId":"HG11","name":"Women's general nutrition","slug":"womens-general-nutrition","description":"Broad nutritional support for women","sort":1},{"id":"C040","goalId":"HG11","name":"Prenatal nutrition","slug":"prenatal-nutrition","description":"Nutritional considerations associated with pregnancy planning and prenatal support","sort":2},{"id":"C041","goalId":"HG11","name":"Menopause support","slug":"menopause-support","description":"Nutritional support commonly discussed around menopause","sort":3},{"id":"C042","goalId":"HG11","name":"Bone health","slug":"womens-bone-health","description":"Bone nutrition across women's life stages","sort":4},{"id":"C043","goalId":"HG11","name":"Iron support","slug":"womens-iron-support","description":"Support for dietary iron intake","sort":5},{"id":"C044","goalId":"HG12","name":"Men's general nutrition","slug":"mens-general-nutrition","description":"Broad nutritional support for men","sort":1},{"id":"C045","goalId":"HG12","name":"Prostate nutrition","slug":"prostate-nutrition","description":"Nutritional ingredients commonly associated with prostate wellness","sort":2},{"id":"C046","goalId":"HG12","name":"Men's healthy aging","slug":"mens-healthy-aging","description":"Nutritional support associated with healthy aging in men","sort":3},{"id":"C047","goalId":"HG12","name":"Exercise & performance","slug":"mens-exercise-performance","description":"Nutrition supporting physical activity and performance","sort":4},{"id":"C048","goalId":"HG13","name":"General aging nutrition","slug":"general-aging-nutrition","description":"Broad nutrition associated with healthy aging","sort":1},{"id":"C049","goalId":"HG13","name":"Muscle maintenance","slug":"muscle-maintenance-aging","description":"Nutritional support for maintaining muscle with age","sort":2},{"id":"C050","goalId":"HG13","name":"Cognitive wellness","slug":"cognitive-wellness-aging","description":"Nutritional support for cognitive wellness with age","sort":3},{"id":"C051","goalId":"HG13","name":"Bone wellness","slug":"bone-wellness-aging","description":"Nutritional support for bone wellness with age","sort":4},{"id":"C052","goalId":"HG14","name":"Everyday stress","slug":"everyday-stress","description":"Nutritional support associated with everyday stress management","sort":1},{"id":"C053","goalId":"HG14","name":"Relaxation","slug":"relaxation","description":"Relaxation and calm-focused nutritional routines","sort":2},{"id":"C054","goalId":"HG14","name":"Mental fatigue","slug":"mental-fatigue","description":"Nutritional support during periods of mental fatigue","sort":3},{"id":"C055","goalId":"HG15","name":"Satiety","slug":"satiety","description":"Nutrition associated with fullness and dietary fiber intake","sort":1},{"id":"C056","goalId":"HG15","name":"Fiber intake","slug":"fiber-intake","description":"Support for increasing dietary fiber","sort":2},{"id":"C057","goalId":"HG15","name":"Protein intake","slug":"protein-intake","description":"Support for adequate dietary protein","sort":3},{"id":"C058","goalId":"HG15","name":"Metabolic nutrition","slug":"metabolic-nutrition","description":"General nutritional support associated with metabolic health","sort":4},{"id":"C059","goalId":"HG15","name":"Healthy weight management","slug":"healthy-weight-management","description":"Nutritional support for healthy weight-management routines","sort":5}],"ingredients":[{"id":"I001","name":"Magnesium","slug":"magnesium","type":"mineral","description":"Essential mineral involved in numerous normal physiological processes."},{"id":"I002","name":"Melatonin","slug":"melatonin","type":"other","description":"Hormone-related sleep ingredient commonly used in sleep products."},{"id":"I003","name":"L-Theanine","slug":"l-theanine","type":"amino_acid","description":"Amino acid found in tea and used in relaxation-oriented products."},{"id":"I004","name":"Glycine","slug":"glycine","type":"amino_acid","description":"Amino acid used in nutrition and sleep-oriented formulations."},{"id":"I005","name":"GABA","slug":"gaba","type":"amino_acid","description":"Neurotransmitter-related ingredient used in some relaxation products."},{"id":"I006","name":"Valerian","slug":"valerian","type":"herbal","description":"Herbal ingredient commonly used in sleep products."},{"id":"I007","name":"Chamomile","slug":"chamomile","type":"herbal","description":"Herbal ingredient commonly used in calming and evening products."},{"id":"I008","name":"Lemon Balm","slug":"lemon-balm","type":"herbal","description":"Herbal ingredient used in relaxation-oriented products."},{"id":"I009","name":"Ashwagandha","slug":"ashwagandha","type":"herbal","description":"Adaptogenic herb used in stress and wellness products."},{"id":"I010","name":"Tart Cherry","slug":"tart-cherry","type":"herbal","description":"Fruit-derived ingredient used in recovery and sleep-oriented products."},{"id":"I011","name":"Vitamin B1","slug":"vitamin-b1","type":"vitamin","description":"Thiamin; vitamin involved in normal energy metabolism."},{"id":"I012","name":"Vitamin B2","slug":"vitamin-b2","type":"vitamin","description":"Riboflavin; vitamin involved in normal energy metabolism."},{"id":"I013","name":"Vitamin B3","slug":"vitamin-b3","type":"vitamin","description":"Niacin; vitamin involved in normal energy metabolism."},{"id":"I014","name":"Vitamin B5","slug":"vitamin-b5","type":"vitamin","description":"Pantothenic acid; vitamin involved in energy metabolism."},{"id":"I015","name":"Vitamin B6","slug":"vitamin-b6","type":"vitamin","description":"Vitamin involved in normal metabolism and nervous-system function."},{"id":"I016","name":"Vitamin B12","slug":"vitamin-b12","type":"vitamin","description":"Vitamin involved in normal red blood cell formation and energy metabolism."},{"id":"I017","name":"Folate","slug":"folate","type":"vitamin","description":"Folate is a B vitamin involved in cell division and normal blood formation."},{"id":"I018","name":"Iron","slug":"iron","type":"mineral","description":"Essential mineral involved in oxygen transport and normal energy metabolism."},{"id":"I019","name":"CoQ10","slug":"coq10","type":"other","description":"Coenzyme used in cellular energy-related processes."},{"id":"I020","name":"Creatine","slug":"creatine","type":"amino_acid","description":"Compound used in muscle and exercise nutrition."},{"id":"I021","name":"Electrolytes","slug":"electrolytes","type":"mineral","description":"Group including sodium, potassium and other minerals used in hydration products."},{"id":"I022","name":"Vitamin C","slug":"vitamin-c","type":"vitamin","description":"Vitamin involved in antioxidant protection and collagen formation."},{"id":"I023","name":"Vitamin D","slug":"vitamin-d","type":"vitamin","description":"Vitamin involved in calcium absorption, bone and immune function."},{"id":"I024","name":"Omega-3","slug":"omega-3","type":"fatty_acid","description":"Family of polyunsaturated fatty acids including EPA and DHA."},{"id":"I025","name":"DHA","slug":"dha","type":"fatty_acid","description":"Omega-3 fatty acid commonly found in fish oil and brain-focused products."},{"id":"I026","name":"EPA","slug":"epa","type":"fatty_acid","description":"Omega-3 fatty acid commonly found in fish oil."},{"id":"I027","name":"Phosphatidylserine","slug":"phosphatidylserine","type":"other","description":"Phospholipid used in cognitive-health products."},{"id":"I028","name":"Choline","slug":"choline","type":"other","description":"Essential nutrient involved in normal cell and nervous-system function."},{"id":"I029","name":"Citicoline","slug":"citicoline","type":"other","description":"Choline-containing compound used in cognitive formulations."},{"id":"I030","name":"Bacopa","slug":"bacopa","type":"herbal","description":"Herbal ingredient used in cognitive-focused products."},{"id":"I031","name":"Ginkgo Biloba","slug":"ginkgo-biloba","type":"herbal","description":"Herbal ingredient used in cognitive and circulatory formulations."},{"id":"I032","name":"Lion's Mane","slug":"lions-mane","type":"herbal","description":"Mushroom-derived ingredient used in cognitive and wellness products."},{"id":"I033","name":"Curcumin","slug":"curcumin","type":"herbal","description":"Turmeric-derived compound used in joint and wellness products."},{"id":"I034","name":"Calcium","slug":"calcium","type":"mineral","description":"Essential mineral important for bones, teeth and normal muscle function."},{"id":"I035","name":"Potassium","slug":"potassium","type":"mineral","description":"Essential electrolyte involved in normal muscle and nerve function."},{"id":"I036","name":"Soluble Fiber","slug":"soluble-fiber","type":"other","description":"Fiber type used in digestive and dietary-support products."},{"id":"I037","name":"Psyllium","slug":"psyllium","type":"other","description":"Soluble fiber commonly used for dietary fiber and regularity."},{"id":"I038","name":"Plant Sterols","slug":"plant-sterols","type":"other","description":"Plant compounds used in cardiovascular nutrition products."},{"id":"I039","name":"Garlic","slug":"garlic","type":"herbal","description":"Botanical ingredient used in cardiovascular and general wellness products."},{"id":"I040","name":"Vitamin K2","slug":"vitamin-k2","type":"vitamin","description":"Vitamin K form commonly used in bone and mineral formulations."},{"id":"I041","name":"Zinc","slug":"zinc","type":"mineral","description":"Essential mineral involved in normal immune function and many enzymes."},{"id":"I042","name":"Selenium","slug":"selenium","type":"mineral","description":"Trace mineral involved in antioxidant and thyroid-related functions."},{"id":"I043","name":"Vitamin A","slug":"vitamin-a","type":"vitamin","description":"Vitamin involved in vision and normal immune function."},{"id":"I044","name":"Vitamin E","slug":"vitamin-e","type":"vitamin","description":"Fat-soluble vitamin with antioxidant functions."},{"id":"I045","name":"Elderberry","slug":"elderberry","type":"herbal","description":"Fruit-derived botanical used in immune-focused products."},{"id":"I046","name":"Echinacea","slug":"echinacea","type":"herbal","description":"Botanical ingredient commonly used in seasonal wellness products."},{"id":"I047","name":"Beta-Glucans","slug":"beta-glucans","type":"other","description":"Polysaccharides found in yeast, oats and mushrooms and used in wellness products."},{"id":"I048","name":"Probiotics","slug":"probiotics","type":"probiotic","description":"Live microorganisms used in products for digestive and microbiome support."},{"id":"I049","name":"Prebiotics","slug":"prebiotics","type":"prebiotic","description":"Substrates used to support beneficial gut microorganisms."},{"id":"I050","name":"Inulin","slug":"inulin","type":"prebiotic","description":"Prebiotic fiber found in many plant-based formulations."},{"id":"I051","name":"Digestive Enzymes","slug":"digestive-enzymes","type":"enzyme","description":"Enzyme blends used in digestive-support products."},{"id":"I052","name":"Lactase","slug":"lactase","type":"enzyme","description":"Enzyme used in products designed to support lactose digestion."},{"id":"I053","name":"Ginger","slug":"ginger","type":"herbal","description":"Botanical used in digestive and wellness products."},{"id":"I054","name":"Peppermint","slug":"peppermint","type":"herbal","description":"Botanical used in digestive-focused products."},{"id":"I055","name":"Collagen","slug":"collagen","type":"protein","description":"Protein used in skin, connective-tissue and joint products."},{"id":"I056","name":"Glucosamine","slug":"glucosamine","type":"other","description":"Compound commonly used in joint-support products."},{"id":"I057","name":"Chondroitin","slug":"chondroitin","type":"other","description":"Compound commonly used in joint-support products."},{"id":"I058","name":"MSM","slug":"msm","type":"other","description":"Sulfur-containing compound used in joint-support formulations."},{"id":"I059","name":"Boswellia","slug":"boswellia","type":"herbal","description":"Botanical used in joint and wellness products."},{"id":"I060","name":"Hyaluronic Acid","slug":"hyaluronic-acid","type":"other","description":"Compound found in connective tissues and used in joint/skin products."},{"id":"I061","name":"Manganese","slug":"manganese","type":"mineral","description":"Trace mineral involved in normal connective-tissue and bone metabolism."},{"id":"I062","name":"Protein","slug":"protein","type":"protein","description":"Dietary protein used for nutrition, muscle and recovery support."},{"id":"I063","name":"BCAAs","slug":"bcaas","type":"amino_acid","description":"Branched-chain amino acids used in sports nutrition."},{"id":"I064","name":"Essential Amino Acids","slug":"essential-amino-acids","type":"amino_acid","description":"Amino acids that must be obtained from the diet."},{"id":"I065","name":"L-Glutamine","slug":"l-glutamine","type":"amino_acid","description":"Amino acid used in sports and nutrition products."},{"id":"I066","name":"Sodium","slug":"sodium","type":"mineral","description":"Electrolyte used in hydration and sports-nutrition products."},{"id":"I067","name":"Biotin","slug":"biotin","type":"vitamin","description":"B vitamin commonly included in hair, skin and nail products."},{"id":"I068","name":"Copper","slug":"copper","type":"mineral","description":"Trace mineral involved in normal connective-tissue and iron metabolism."},{"id":"I069","name":"Silica","slug":"silica","type":"other","description":"Mineral compound used in some hair, skin and nail formulations."},{"id":"I070","name":"DHA Prenatal","slug":"dha-prenatal","type":"fatty_acid","description":"DHA used in prenatal nutritional products."},{"id":"I071","name":"Cranberry","slug":"cranberry","type":"herbal","description":"Fruit-derived ingredient used in urinary and women's wellness products."},{"id":"I072","name":"Black Cohosh","slug":"black-cohosh","type":"herbal","description":"Botanical commonly used in menopause-oriented products."},{"id":"I073","name":"Soy Isoflavones","slug":"soy-isoflavones","type":"herbal","description":"Plant compounds used in menopause-oriented formulations."},{"id":"I074","name":"Evening Primrose Oil","slug":"evening-primrose-oil","type":"fatty_acid","description":"Plant oil used in women's wellness products."},{"id":"I075","name":"Saw Palmetto","slug":"saw-palmetto","type":"herbal","description":"Botanical commonly used in men's prostate-focused products."},{"id":"I076","name":"Lycopene","slug":"lycopene","type":"other","description":"Carotenoid antioxidant used in men's and general wellness products."},{"id":"I077","name":"L-Citrulline","slug":"l-citrulline","type":"amino_acid","description":"Amino acid used in sports and performance formulations."},{"id":"I078","name":"Rhodiola","slug":"rhodiola","type":"herbal","description":"Botanical used in energy and stress-oriented products."},{"id":"I079","name":"Ginseng","slug":"ginseng","type":"herbal","description":"Botanical used in energy and wellness formulations."},{"id":"I080","name":"Saffron","slug":"saffron","type":"herbal","description":"Botanical used in mood and wellness products."},{"id":"I081","name":"Green Tea Extract","slug":"green-tea-extract","type":"herbal","description":"Botanical extract used in metabolic and energy products."},{"id":"I082","name":"Caffeine","slug":"caffeine","type":"other","description":"Stimulant commonly used in energy products."},{"id":"I083","name":"Chromium","slug":"chromium","type":"mineral","description":"Trace mineral used in metabolic nutrition products."},{"id":"I084","name":"Berberine","slug":"berberine","type":"herbal","description":"Botanical-derived compound used in metabolic-health products."},{"id":"I085","name":"Apple Cider Vinegar","slug":"apple-cider-vinegar","type":"other","description":"Food-derived ingredient used in weight-management products."},{"id":"I086","name":"Vitamin K1","slug":"vitamin-k1","type":"vitamin","description":"Vitamin K form involved in normal blood clotting and bone metabolism."},{"id":"I087","name":"Boron","slug":"boron","type":"mineral","description":"Trace element used in some bone/mineral formulations."},{"id":"I088","name":"Strontium","slug":"strontium","type":"mineral","description":"Mineral included in some bone-support products."},{"id":"I089","name":"Lactobacillus","slug":"lactobacillus","type":"probiotic","description":"Genus of probiotic microorganisms."},{"id":"I090","name":"Bifidobacterium","slug":"bifidobacterium","type":"probiotic","description":"Genus of probiotic microorganisms."},{"id":"I091","name":"Lactobacillus acidophilus","slug":"lactobacillus-acidophilus","type":"probiotic","description":"Specific probiotic species used in digestive products."},{"id":"I092","name":"Bifidobacterium infantis 35624","slug":"bifidobacterium-infantis-35624","type":"probiotic","description":"Specific probiotic strain used in some digestive-health products."},{"id":"I093","name":"Taurine","slug":"taurine","type":"amino_acid","description":"Amino-sulfonic compound used in energy and sports products."},{"id":"I094","name":"Vitamin B6","slug":"vitamin-b6-duplicate-safe","type":"vitamin","description":"Vitamin B6; duplicate-safe catalog entry retained for taxonomy compatibility."}],"goalIngredients":[{"goalId":"HG01","ingredientId":"I001","relevance":"primary","evidence":"A","sort":1},{"goalId":"HG01","ingredientId":"I002","relevance":"primary","evidence":"C","sort":2},{"goalId":"HG01","ingredientId":"I003","relevance":"secondary","evidence":"C","sort":3},{"goalId":"HG01","ingredientId":"I004","relevance":"secondary","evidence":"C","sort":4},{"goalId":"HG01","ingredientId":"I005","relevance":"secondary","evidence":"C","sort":5},{"goalId":"HG01","ingredientId":"I006","relevance":"secondary","evidence":"C","sort":6},{"goalId":"HG01","ingredientId":"I007","relevance":"secondary","evidence":"C","sort":7},{"goalId":"HG01","ingredientId":"I008","relevance":"secondary","evidence":"C","sort":8},{"goalId":"HG01","ingredientId":"I009","relevance":"secondary","evidence":"C","sort":9},{"goalId":"HG01","ingredientId":"I010","relevance":"secondary","evidence":"C","sort":10},{"goalId":"HG02","ingredientId":"I011","relevance":"primary","evidence":"A","sort":1},{"goalId":"HG02","ingredientId":"I012","relevance":"primary","evidence":"A","sort":2},{"goalId":"HG02","ingredientId":"I013","relevance":"primary","evidence":"A","sort":3},{"goalId":"HG02","ingredientId":"I014","relevance":"primary","evidence":"A","sort":4},{"goalId":"HG02","ingredientId":"I015","relevance":"primary","evidence":"A","sort":5},{"goalId":"HG02","ingredientId":"I016","relevance":"primary","evidence":"A","sort":6},{"goalId":"HG02","ingredientId":"I017","relevance":"primary","evidence":"A","sort":7},{"goalId":"HG02","ingredientId":"I018","relevance":"primary","evidence":"A","sort":8},{"goalId":"HG02","ingredientId":"I019","relevance":"secondary","evidence":"C","sort":9},{"goalId":"HG02","ingredientId":"I020","relevance":"secondary","evidence":"A","sort":10},{"goalId":"HG02","ingredientId":"I021","relevance":"secondary","evidence":"A","sort":11},{"goalId":"HG02","ingredientId":"I022","relevance":"secondary","evidence":"A","sort":12},{"goalId":"HG02","ingredientId":"I023","relevance":"secondary","evidence":"A","sort":13},{"goalId":"HG02","ingredientId":"I078","relevance":"secondary","evidence":"C","sort":14},{"goalId":"HG02","ingredientId":"I079","relevance":"secondary","evidence":"C","sort":15},{"goalId":"HG03","ingredientId":"I024","relevance":"primary","evidence":"B","sort":1},{"goalId":"HG03","ingredientId":"I025","relevance":"primary","evidence":"B","sort":2},{"goalId":"HG03","ingredientId":"I027","relevance":"secondary","evidence":"C","sort":3},{"goalId":"HG03","ingredientId":"I028","relevance":"secondary","evidence":"A","sort":4},{"goalId":"HG03","ingredientId":"I029","relevance":"secondary","evidence":"C","sort":5},{"goalId":"HG03","ingredientId":"I030","relevance":"secondary","evidence":"C","sort":6},{"goalId":"HG03","ingredientId":"I031","relevance":"secondary","evidence":"C","sort":7},{"goalId":"HG03","ingredientId":"I032","relevance":"emerging","evidence":"C","sort":8},{"goalId":"HG03","ingredientId":"I001","relevance":"secondary","evidence":"B","sort":9},{"goalId":"HG03","ingredientId":"I016","relevance":"primary","evidence":"A","sort":10},{"goalId":"HG03","ingredientId":"I017","relevance":"primary","evidence":"A","sort":11},{"goalId":"HG03","ingredientId":"I033","relevance":"emerging","evidence":"C","sort":12},{"goalId":"HG04","ingredientId":"I024","relevance":"primary","evidence":"A","sort":1},{"goalId":"HG04","ingredientId":"I025","relevance":"primary","evidence":"B","sort":2},{"goalId":"HG04","ingredientId":"I026","relevance":"primary","evidence":"A","sort":3},{"goalId":"HG04","ingredientId":"I019","relevance":"secondary","evidence":"C","sort":4},{"goalId":"HG04","ingredientId":"I001","relevance":"secondary","evidence":"A","sort":5},{"goalId":"HG04","ingredientId":"I035","relevance":"primary","evidence":"A","sort":6},{"goalId":"HG04","ingredientId":"I036","relevance":"primary","evidence":"A","sort":7},{"goalId":"HG04","ingredientId":"I037","relevance":"primary","evidence":"A","sort":8},{"goalId":"HG04","ingredientId":"I038","relevance":"secondary","evidence":"B","sort":9},{"goalId":"HG04","ingredientId":"I013","relevance":"primary","evidence":"A","sort":10},{"goalId":"HG04","ingredientId":"I039","relevance":"secondary","evidence":"C","sort":11},{"goalId":"HG04","ingredientId":"I040","relevance":"secondary","evidence":"B","sort":12},{"goalId":"HG04","ingredientId":"I023","relevance":"secondary","evidence":"A","sort":13},{"goalId":"HG05","ingredientId":"I022","relevance":"primary","evidence":"A","sort":1},{"goalId":"HG05","ingredientId":"I023","relevance":"primary","evidence":"A","sort":2},{"goalId":"HG05","ingredientId":"I041","relevance":"primary","evidence":"A","sort":3},{"goalId":"HG05","ingredientId":"I042","relevance":"secondary","evidence":"A","sort":4},{"goalId":"HG05","ingredientId":"I043","relevance":"primary","evidence":"A","sort":5},{"goalId":"HG05","ingredientId":"I044","relevance":"secondary","evidence":"A","sort":6},{"goalId":"HG05","ingredientId":"I045","relevance":"secondary","evidence":"C","sort":7},{"goalId":"HG05","ingredientId":"I046","relevance":"secondary","evidence":"C","sort":8},{"goalId":"HG05","ingredientId":"I039","relevance":"secondary","evidence":"C","sort":9},{"goalId":"HG05","ingredientId":"I048","relevance":"secondary","evidence":"B","sort":10},{"goalId":"HG05","ingredientId":"I047","relevance":"emerging","evidence":"C","sort":11},{"goalId":"HG06","ingredientId":"I048","relevance":"primary","evidence":"B","sort":1},{"goalId":"HG06","ingredientId":"I049","relevance":"secondary","evidence":"B","sort":2},{"goalId":"HG06","ingredientId":"I037","relevance":"primary","evidence":"A","sort":3},{"goalId":"HG06","ingredientId":"I050","relevance":"secondary","evidence":"B","sort":4},{"goalId":"HG06","ingredientId":"I036","relevance":"primary","evidence":"A","sort":5},{"goalId":"HG06","ingredientId":"I051","relevance":"secondary","evidence":"C","sort":6},{"goalId":"HG06","ingredientId":"I052","relevance":"primary","evidence":"A","sort":7},{"goalId":"HG06","ingredientId":"I053","relevance":"secondary","evidence":"C","sort":8},{"goalId":"HG06","ingredientId":"I054","relevance":"secondary","evidence":"C","sort":9},{"goalId":"HG06","ingredientId":"I001","relevance":"secondary","evidence":"A","sort":10},{"goalId":"HG06","ingredientId":"I041","relevance":"secondary","evidence":"A","sort":11},{"goalId":"HG07","ingredientId":"I034","relevance":"primary","evidence":"A","sort":1},{"goalId":"HG07","ingredientId":"I023","relevance":"primary","evidence":"A","sort":2},{"goalId":"HG07","ingredientId":"I086","relevance":"secondary","evidence":"A","sort":3},{"goalId":"HG07","ingredientId":"I040","relevance":"secondary","evidence":"B","sort":4},{"goalId":"HG07","ingredientId":"I001","relevance":"primary","evidence":"A","sort":5},{"goalId":"HG07","ingredientId":"I041","relevance":"secondary","evidence":"A","sort":6},{"goalId":"HG07","ingredientId":"I087","relevance":"emerging","evidence":"C","sort":7},{"goalId":"HG07","ingredientId":"I088","relevance":"emerging","evidence":"C","sort":8},{"goalId":"HG07","ingredientId":"I022","relevance":"primary","evidence":"A","sort":9},{"goalId":"HG07","ingredientId":"I062","relevance":"secondary","evidence":"A","sort":10},{"goalId":"HG08","ingredientId":"I056","relevance":"primary","evidence":"C","sort":1},{"goalId":"HG08","ingredientId":"I057","relevance":"primary","evidence":"C","sort":2},{"goalId":"HG08","ingredientId":"I058","relevance":"primary","evidence":"C","sort":3},{"goalId":"HG08","ingredientId":"I033","relevance":"primary","evidence":"B","sort":4},{"goalId":"HG08","ingredientId":"I059","relevance":"secondary","evidence":"C","sort":5},{"goalId":"HG08","ingredientId":"I055","relevance":"primary","evidence":"B","sort":6},{"goalId":"HG08","ingredientId":"I060","relevance":"secondary","evidence":"C","sort":7},{"goalId":"HG08","ingredientId":"I024","relevance":"secondary","evidence":"B","sort":8},{"goalId":"HG08","ingredientId":"I022","relevance":"primary","evidence":"A","sort":9},{"goalId":"HG08","ingredientId":"I061","relevance":"secondary","evidence":"A","sort":10},{"goalId":"HG09","ingredientId":"I062","relevance":"primary","evidence":"A","sort":1},{"goalId":"HG09","ingredientId":"I020","relevance":"primary","evidence":"A","sort":2},{"goalId":"HG09","ingredientId":"I063","relevance":"secondary","evidence":"B","sort":3},{"goalId":"HG09","ingredientId":"I064","relevance":"secondary","evidence":"A","sort":4},{"goalId":"HG09","ingredientId":"I065","relevance":"secondary","evidence":"C","sort":5},{"goalId":"HG09","ingredientId":"I001","relevance":"primary","evidence":"A","sort":6},{"goalId":"HG09","ingredientId":"I035","relevance":"primary","evidence":"A","sort":7},{"goalId":"HG09","ingredientId":"I066","relevance":"primary","evidence":"A","sort":8},{"goalId":"HG09","ingredientId":"I034","relevance":"secondary","evidence":"A","sort":9},{"goalId":"HG09","ingredientId":"I023","relevance":"secondary","evidence":"A","sort":10},{"goalId":"HG09","ingredientId":"I024","relevance":"secondary","evidence":"B","sort":11},{"goalId":"HG09","ingredientId":"I010","relevance":"secondary","evidence":"C","sort":12},{"goalId":"HG09","ingredientId":"I021","relevance":"primary","evidence":"A","sort":13},{"goalId":"HG10","ingredientId":"I067","relevance":"secondary","evidence":"C","sort":1},{"goalId":"HG10","ingredientId":"I055","relevance":"primary","evidence":"B","sort":2},{"goalId":"HG10","ingredientId":"I022","relevance":"primary","evidence":"A","sort":3},{"goalId":"HG10","ingredientId":"I044","relevance":"secondary","evidence":"A","sort":4},{"goalId":"HG10","ingredientId":"I043","relevance":"secondary","evidence":"A","sort":5},{"goalId":"HG10","ingredientId":"I041","relevance":"primary","evidence":"A","sort":6},{"goalId":"HG10","ingredientId":"I042","relevance":"secondary","evidence":"A","sort":7},{"goalId":"HG10","ingredientId":"I060","relevance":"secondary","evidence":"C","sort":8},{"goalId":"HG10","ingredientId":"I024","relevance":"secondary","evidence":"B","sort":9},{"goalId":"HG10","ingredientId":"I068","relevance":"secondary","evidence":"A","sort":10},{"goalId":"HG10","ingredientId":"I069","relevance":"emerging","evidence":"C","sort":11},{"goalId":"HG11","ingredientId":"I018","relevance":"primary","evidence":"A","sort":1},{"goalId":"HG11","ingredientId":"I017","relevance":"primary","evidence":"A","sort":2},{"goalId":"HG11","ingredientId":"I016","relevance":"primary","evidence":"A","sort":3},{"goalId":"HG11","ingredientId":"I023","relevance":"primary","evidence":"A","sort":4},{"goalId":"HG11","ingredientId":"I034","relevance":"primary","evidence":"A","sort":5},{"goalId":"HG11","ingredientId":"I001","relevance":"secondary","evidence":"A","sort":6},{"goalId":"HG11","ingredientId":"I040","relevance":"secondary","evidence":"B","sort":7},{"goalId":"HG11","ingredientId":"I024","relevance":"secondary","evidence":"B","sort":8},{"goalId":"HG11","ingredientId":"I028","relevance":"primary","evidence":"A","sort":9},{"goalId":"HG11","ingredientId":"I025","relevance":"primary","evidence":"A","sort":10},{"goalId":"HG11","ingredientId":"I048","relevance":"secondary","evidence":"B","sort":11},{"goalId":"HG11","ingredientId":"I071","relevance":"secondary","evidence":"C","sort":12},{"goalId":"HG11","ingredientId":"I072","relevance":"secondary","evidence":"C","sort":13},{"goalId":"HG11","ingredientId":"I073","relevance":"secondary","evidence":"C","sort":14},{"goalId":"HG11","ingredientId":"I074","relevance":"secondary","evidence":"C","sort":15},{"goalId":"HG12","ingredientId":"I041","relevance":"primary","evidence":"A","sort":1},{"goalId":"HG12","ingredientId":"I042","relevance":"primary","evidence":"A","sort":2},{"goalId":"HG12","ingredientId":"I023","relevance":"primary","evidence":"A","sort":3},{"goalId":"HG12","ingredientId":"I001","relevance":"secondary","evidence":"A","sort":4},{"goalId":"HG12","ingredientId":"I016","relevance":"primary","evidence":"A","sort":5},{"goalId":"HG12","ingredientId":"I017","relevance":"primary","evidence":"A","sort":6},{"goalId":"HG12","ingredientId":"I024","relevance":"secondary","evidence":"B","sort":7},{"goalId":"HG12","ingredientId":"I019","relevance":"secondary","evidence":"C","sort":8},{"goalId":"HG12","ingredientId":"I075","relevance":"secondary","evidence":"C","sort":9},{"goalId":"HG12","ingredientId":"I076","relevance":"secondary","evidence":"C","sort":10},{"goalId":"HG12","ingredientId":"I009","relevance":"secondary","evidence":"C","sort":11},{"goalId":"HG12","ingredientId":"I077","relevance":"secondary","evidence":"B","sort":12},{"goalId":"HG13","ingredientId":"I023","relevance":"primary","evidence":"A","sort":1},{"goalId":"HG13","ingredientId":"I034","relevance":"primary","evidence":"A","sort":2},{"goalId":"HG13","ingredientId":"I001","relevance":"primary","evidence":"A","sort":3},{"goalId":"HG13","ingredientId":"I016","relevance":"primary","evidence":"A","sort":4},{"goalId":"HG13","ingredientId":"I017","relevance":"primary","evidence":"A","sort":5},{"goalId":"HG13","ingredientId":"I024","relevance":"primary","evidence":"B","sort":6},{"goalId":"HG13","ingredientId":"I019","relevance":"secondary","evidence":"C","sort":7},{"goalId":"HG13","ingredientId":"I022","relevance":"primary","evidence":"A","sort":8},{"goalId":"HG13","ingredientId":"I044","relevance":"secondary","evidence":"A","sort":9},{"goalId":"HG13","ingredientId":"I041","relevance":"primary","evidence":"A","sort":10},{"goalId":"HG13","ingredientId":"I042","relevance":"primary","evidence":"A","sort":11},{"goalId":"HG13","ingredientId":"I062","relevance":"primary","evidence":"A","sort":12},{"goalId":"HG13","ingredientId":"I020","relevance":"secondary","evidence":"A","sort":13},{"goalId":"HG13","ingredientId":"I033","relevance":"emerging","evidence":"C","sort":14},{"goalId":"HG14","ingredientId":"I001","relevance":"primary","evidence":"A","sort":1},{"goalId":"HG14","ingredientId":"I003","relevance":"secondary","evidence":"C","sort":2},{"goalId":"HG14","ingredientId":"I009","relevance":"secondary","evidence":"C","sort":3},{"goalId":"HG14","ingredientId":"I078","relevance":"secondary","evidence":"C","sort":4},{"goalId":"HG14","ingredientId":"I005","relevance":"secondary","evidence":"C","sort":5},{"goalId":"HG14","ingredientId":"I008","relevance":"secondary","evidence":"C","sort":6},{"goalId":"HG14","ingredientId":"I080","relevance":"emerging","evidence":"C","sort":7},{"goalId":"HG14","ingredientId":"I024","relevance":"secondary","evidence":"B","sort":8},{"goalId":"HG14","ingredientId":"I015","relevance":"primary","evidence":"A","sort":9},{"goalId":"HG14","ingredientId":"I016","relevance":"primary","evidence":"A","sort":10},{"goalId":"HG14","ingredientId":"I017","relevance":"primary","evidence":"A","sort":11},{"goalId":"HG14","ingredientId":"I023","relevance":"secondary","evidence":"A","sort":12},{"goalId":"HG15","ingredientId":"I036","relevance":"primary","evidence":"A","sort":1},{"goalId":"HG15","ingredientId":"I037","relevance":"primary","evidence":"A","sort":2},{"goalId":"HG15","ingredientId":"I062","relevance":"primary","evidence":"A","sort":3},{"goalId":"HG15","ingredientId":"I020","relevance":"secondary","evidence":"A","sort":4},{"goalId":"HG15","ingredientId":"I081","relevance":"secondary","evidence":"C","sort":5},{"goalId":"HG15","ingredientId":"I082","relevance":"secondary","evidence":"B","sort":6},{"goalId":"HG15","ingredientId":"I083","relevance":"secondary","evidence":"C","sort":7},{"goalId":"HG15","ingredientId":"I084","relevance":"emerging","evidence":"C","sort":8},{"goalId":"HG15","ingredientId":"I085","relevance":"emerging","evidence":"C","sort":9},{"goalId":"HG15","ingredientId":"I024","relevance":"secondary","evidence":"B","sort":10},{"goalId":"HG15","ingredientId":"I001","relevance":"secondary","evidence":"A","sort":11}],"concernIngredients":[{"concernId":"C001","ingredientId":"I001","relevance":"primary","evidence":"A","sort":1},{"concernId":"C001","ingredientId":"I002","relevance":"primary","evidence":"C","sort":2},{"concernId":"C001","ingredientId":"I003","relevance":"secondary","evidence":"C","sort":3},{"concernId":"C001","ingredientId":"I007","relevance":"secondary","evidence":"C","sort":4},{"concernId":"C001","ingredientId":"I010","relevance":"emerging","evidence":"C","sort":5},{"concernId":"C002","ingredientId":"I001","relevance":"primary","evidence":"A","sort":1},{"concernId":"C002","ingredientId":"I002","relevance":"primary","evidence":"C","sort":2},{"concernId":"C002","ingredientId":"I003","relevance":"secondary","evidence":"C","sort":3},{"concernId":"C002","ingredientId":"I004","relevance":"secondary","evidence":"C","sort":4},{"concernId":"C003","ingredientId":"I001","relevance":"primary","evidence":"A","sort":1},{"concernId":"C003","ingredientId":"I003","relevance":"secondary","evidence":"C","sort":2},{"concernId":"C003","ingredientId":"I007","relevance":"secondary","evidence":"C","sort":3},{"concernId":"C004","ingredientId":"I001","relevance":"primary","evidence":"A","sort":1},{"concernId":"C004","ingredientId":"I003","relevance":"secondary","evidence":"C","sort":2},{"concernId":"C004","ingredientId":"I008","relevance":"secondary","evidence":"C","sort":3},{"concernId":"C004","ingredientId":"I009","relevance":"secondary","evidence":"C","sort":4},{"concernId":"C005","ingredientId":"I011","relevance":"primary","evidence":"A","sort":1},{"concernId":"C005","ingredientId":"I012","relevance":"primary","evidence":"A","sort":2},{"concernId":"C005","ingredientId":"I013","relevance":"primary","evidence":"A","sort":3},{"concernId":"C005","ingredientId":"I014","relevance":"primary","evidence":"A","sort":4},{"concernId":"C005","ingredientId":"I015","relevance":"primary","evidence":"A","sort":5},{"concernId":"C005","ingredientId":"I016","relevance":"primary","evidence":"A","sort":6},{"concernId":"C005","ingredientId":"I019","relevance":"secondary","evidence":"C","sort":7},{"concernId":"C006","ingredientId":"I020","relevance":"primary","evidence":"A","sort":1},{"concernId":"C006","ingredientId":"I021","relevance":"primary","evidence":"A","sort":2},{"concernId":"C006","ingredientId":"I062","relevance":"primary","evidence":"A","sort":3},{"concernId":"C006","ingredientId":"I024","relevance":"secondary","evidence":"B","sort":4},{"concernId":"C007","ingredientId":"I020","relevance":"primary","evidence":"A","sort":1},{"concernId":"C007","ingredientId":"I062","relevance":"primary","evidence":"A","sort":2},{"concernId":"C007","ingredientId":"I064","relevance":"secondary","evidence":"A","sort":3},{"concernId":"C007","ingredientId":"I077","relevance":"secondary","evidence":"B","sort":4},{"concernId":"C008","ingredientId":"I011","relevance":"primary","evidence":"A","sort":1},{"concernId":"C008","ingredientId":"I016","relevance":"primary","evidence":"A","sort":2},{"concernId":"C008","ingredientId":"I022","relevance":"secondary","evidence":"A","sort":3},{"concernId":"C008","ingredientId":"I023","relevance":"secondary","evidence":"A","sort":4},{"concernId":"C009","ingredientId":"I024","relevance":"primary","evidence":"B","sort":1},{"concernId":"C009","ingredientId":"I025","relevance":"primary","evidence":"B","sort":2},{"concernId":"C009","ingredientId":"I028","relevance":"primary","evidence":"A","sort":3},{"concernId":"C009","ingredientId":"I031","relevance":"secondary","evidence":"C","sort":4},{"concernId":"C009","ingredientId":"I030","relevance":"secondary","evidence":"C","sort":5},{"concernId":"C010","ingredientId":"I028","relevance":"primary","evidence":"A","sort":1},{"concernId":"C010","ingredientId":"I029","relevance":"secondary","evidence":"C","sort":2},{"concernId":"C010","ingredientId":"I024","relevance":"secondary","evidence":"B","sort":3},{"concernId":"C010","ingredientId":"I032","relevance":"emerging","evidence":"C","sort":4},{"concernId":"C011","ingredientId":"I028","relevance":"primary","evidence":"A","sort":1},{"concernId":"C011","ingredientId":"I029","relevance":"secondary","evidence":"C","sort":2},{"concernId":"C011","ingredientId":"I016","relevance":"primary","evidence":"A","sort":3},{"concernId":"C012","ingredientId":"I024","relevance":"primary","evidence":"B","sort":1},{"concernId":"C012","ingredientId":"I025","relevance":"primary","evidence":"B","sort":2},{"concernId":"C012","ingredientId":"I016","relevance":"primary","evidence":"A","sort":3},{"concernId":"C012","ingredientId":"I017","relevance":"primary","evidence":"A","sort":4},{"concernId":"C013","ingredientId":"I024","relevance":"primary","evidence":"A","sort":1},{"concernId":"C013","ingredientId":"I026","relevance":"primary","evidence":"A","sort":2},{"concernId":"C013","ingredientId":"I019","relevance":"secondary","evidence":"C","sort":3},{"concernId":"C014","ingredientId":"I024","relevance":"primary","evidence":"A","sort":1},{"concernId":"C014","ingredientId":"I026","relevance":"primary","evidence":"A","sort":2},{"concernId":"C014","ingredientId":"I001","relevance":"secondary","evidence":"A","sort":3},{"concernId":"C015","ingredientId":"I037","relevance":"primary","evidence":"A","sort":1},{"concernId":"C015","ingredientId":"I038","relevance":"secondary","evidence":"B","sort":2},{"concernId":"C015","ingredientId":"I024","relevance":"secondary","evidence":"B","sort":3},{"concernId":"C016","ingredientId":"I024","relevance":"primary","evidence":"A","sort":1},{"concernId":"C016","ingredientId":"I026","relevance":"primary","evidence":"A","sort":2},{"concernId":"C016","ingredientId":"I031","relevance":"secondary","evidence":"C","sort":3},{"concernId":"C017","ingredientId":"I022","relevance":"primary","evidence":"A","sort":1},{"concernId":"C017","ingredientId":"I023","relevance":"primary","evidence":"A","sort":2},{"concernId":"C017","ingredientId":"I041","relevance":"primary","evidence":"A","sort":3},{"concernId":"C017","ingredientId":"I042","relevance":"secondary","evidence":"A","sort":4},{"concernId":"C018","ingredientId":"I022","relevance":"primary","evidence":"A","sort":1},{"concernId":"C018","ingredientId":"I023","relevance":"primary","evidence":"A","sort":2},{"concernId":"C018","ingredientId":"I041","relevance":"primary","evidence":"A","sort":3},{"concernId":"C018","ingredientId":"I045","relevance":"secondary","evidence":"C","sort":4},{"concernId":"C019","ingredientId":"I022","relevance":"primary","evidence":"A","sort":1},{"concernId":"C019","ingredientId":"I044","relevance":"secondary","evidence":"A","sort":2},{"concernId":"C019","ingredientId":"I042","relevance":"secondary","evidence":"A","sort":3},{"concernId":"C019","ingredientId":"I043","relevance":"secondary","evidence":"A","sort":4},{"concernId":"C020","ingredientId":"I048","relevance":"primary","evidence":"B","sort":1},{"concernId":"C020","ingredientId":"I049","relevance":"secondary","evidence":"B","sort":2},{"concernId":"C020","ingredientId":"I050","relevance":"secondary","evidence":"B","sort":3},{"concernId":"C021","ingredientId":"I051","relevance":"secondary","evidence":"C","sort":1},{"concernId":"C021","ingredientId":"I052","relevance":"primary","evidence":"A","sort":2},{"concernId":"C021","ingredientId":"I053","relevance":"secondary","evidence":"C","sort":3},{"concernId":"C021","ingredientId":"I054","relevance":"secondary","evidence":"C","sort":4},{"concernId":"C022","ingredientId":"I037","relevance":"primary","evidence":"A","sort":1},{"concernId":"C022","ingredientId":"I036","relevance":"primary","evidence":"A","sort":2},{"concernId":"C022","ingredientId":"I050","relevance":"secondary","evidence":"B","sort":3},{"concernId":"C022","ingredientId":"I001","relevance":"secondary","evidence":"A","sort":4},{"concernId":"C023","ingredientId":"I048","relevance":"primary","evidence":"B","sort":1},{"concernId":"C023","ingredientId":"I049","relevance":"primary","evidence":"B","sort":2},{"concernId":"C023","ingredientId":"I050","relevance":"secondary","evidence":"B","sort":3},{"concernId":"C024","ingredientId":"I034","relevance":"primary","evidence":"A","sort":1},{"concernId":"C024","ingredientId":"I023","relevance":"primary","evidence":"A","sort":2},{"concernId":"C024","ingredientId":"I040","relevance":"secondary","evidence":"B","sort":3},{"concernId":"C024","ingredientId":"I001","relevance":"secondary","evidence":"A","sort":4},{"concernId":"C025","ingredientId":"I034","relevance":"primary","evidence":"A","sort":1},{"concernId":"C025","ingredientId":"I023","relevance":"secondary","evidence":"A","sort":2},{"concernId":"C026","ingredientId":"I023","relevance":"primary","evidence":"A","sort":1},{"concernId":"C026","ingredientId":"I034","relevance":"secondary","evidence":"A","sort":2},{"concernId":"C027","ingredientId":"I001","relevance":"primary","evidence":"A","sort":1},{"concernId":"C027","ingredientId":"I034","relevance":"primary","evidence":"A","sort":2},{"concernId":"C027","ingredientId":"I041","relevance":"secondary","evidence":"A","sort":3},{"concernId":"C027","ingredientId":"I042","relevance":"secondary","evidence":"A","sort":4},{"concernId":"C028","ingredientId":"I056","relevance":"primary","evidence":"C","sort":1},{"concernId":"C028","ingredientId":"I057","relevance":"primary","evidence":"C","sort":2},{"concernId":"C028","ingredientId":"I058","relevance":"primary","evidence":"C","sort":3},{"concernId":"C028","ingredientId":"I033","relevance":"primary","evidence":"B","sort":4},{"concernId":"C029","ingredientId":"I056","relevance":"primary","evidence":"C","sort":1},{"concernId":"C029","ingredientId":"I058","relevance":"secondary","evidence":"C","sort":2},{"concernId":"C029","ingredientId":"I024","relevance":"secondary","evidence":"B","sort":3},{"concernId":"C030","ingredientId":"I055","relevance":"primary","evidence":"B","sort":1},{"concernId":"C030","ingredientId":"I022","relevance":"primary","evidence":"A","sort":2},{"concernId":"C030","ingredientId":"I060","relevance":"secondary","evidence":"C","sort":3},{"concernId":"C031","ingredientId":"I062","relevance":"primary","evidence":"A","sort":1},{"concernId":"C031","ingredientId":"I020","relevance":"primary","evidence":"A","sort":2},{"concernId":"C031","ingredientId":"I001","relevance":"primary","evidence":"A","sort":3},{"concernId":"C032","ingredientId":"I062","relevance":"primary","evidence":"A","sort":1},{"concernId":"C032","ingredientId":"I020","relevance":"primary","evidence":"A","sort":2},{"concernId":"C032","ingredientId":"I010","relevance":"secondary","evidence":"C","sort":3},{"concernId":"C033","ingredientId":"I020","relevance":"primary","evidence":"A","sort":1},{"concernId":"C033","ingredientId":"I062","relevance":"primary","evidence":"A","sort":2},{"concernId":"C033","ingredientId":"I077","relevance":"secondary","evidence":"B","sort":3},{"concernId":"C034","ingredientId":"I021","relevance":"primary","evidence":"A","sort":1},{"concernId":"C034","ingredientId":"I066","relevance":"primary","evidence":"A","sort":2},{"concernId":"C034","ingredientId":"I035","relevance":"primary","evidence":"A","sort":3},{"concernId":"C035","ingredientId":"I067","relevance":"secondary","evidence":"C","sort":1},{"concernId":"C035","ingredientId":"I055","relevance":"primary","evidence":"B","sort":2},{"concernId":"C035","ingredientId":"I041","relevance":"primary","evidence":"A","sort":3},{"concernId":"C035","ingredientId":"I068","relevance":"secondary","evidence":"A","sort":4},{"concernId":"C036","ingredientId":"I022","relevance":"primary","evidence":"A","sort":1},{"concernId":"C036","ingredientId":"I055","relevance":"primary","evidence":"B","sort":2},{"concernId":"C036","ingredientId":"I043","relevance":"secondary","evidence":"A","sort":3},{"concernId":"C036","ingredientId":"I044","relevance":"secondary","evidence":"A","sort":4},{"concernId":"C037","ingredientId":"I067","relevance":"secondary","evidence":"C","sort":1},{"concernId":"C037","ingredientId":"I041","relevance":"primary","evidence":"A","sort":2},{"concernId":"C037","ingredientId":"I068","relevance":"secondary","evidence":"A","sort":3},{"concernId":"C038","ingredientId":"I055","relevance":"primary","evidence":"B","sort":1},{"concernId":"C038","ingredientId":"I022","relevance":"primary","evidence":"A","sort":2},{"concernId":"C038","ingredientId":"I060","relevance":"secondary","evidence":"C","sort":3},{"concernId":"C039","ingredientId":"I016","relevance":"primary","evidence":"A","sort":1},{"concernId":"C039","ingredientId":"I017","relevance":"primary","evidence":"A","sort":2},{"concernId":"C039","ingredientId":"I023","relevance":"primary","evidence":"A","sort":3},{"concernId":"C039","ingredientId":"I034","relevance":"primary","evidence":"A","sort":4},{"concernId":"C040","ingredientId":"I017","relevance":"primary","evidence":"A","sort":1},{"concernId":"C040","ingredientId":"I028","relevance":"primary","evidence":"A","sort":2},{"concernId":"C040","ingredientId":"I025","relevance":"primary","evidence":"A","sort":3},{"concernId":"C040","ingredientId":"I018","relevance":"primary","evidence":"A","sort":4},{"concernId":"C041","ingredientId":"I072","relevance":"secondary","evidence":"C","sort":1},{"concernId":"C041","ingredientId":"I073","relevance":"secondary","evidence":"C","sort":2},{"concernId":"C041","ingredientId":"I023","relevance":"primary","evidence":"A","sort":3},{"concernId":"C041","ingredientId":"I034","relevance":"primary","evidence":"A","sort":4},{"concernId":"C041","ingredientId":"I001","relevance":"secondary","evidence":"A","sort":5},{"concernId":"C042","ingredientId":"I034","relevance":"primary","evidence":"A","sort":1},{"concernId":"C042","ingredientId":"I023","relevance":"primary","evidence":"A","sort":2},{"concernId":"C042","ingredientId":"I040","relevance":"secondary","evidence":"B","sort":3},{"concernId":"C043","ingredientId":"I018","relevance":"primary","evidence":"A","sort":1},{"concernId":"C043","ingredientId":"I017","relevance":"secondary","evidence":"A","sort":2},{"concernId":"C043","ingredientId":"I016","relevance":"secondary","evidence":"A","sort":3},{"concernId":"C044","ingredientId":"I041","relevance":"primary","evidence":"A","sort":1},{"concernId":"C044","ingredientId":"I023","relevance":"primary","evidence":"A","sort":2},{"concernId":"C044","ingredientId":"I016","relevance":"primary","evidence":"A","sort":3},{"concernId":"C044","ingredientId":"I001","relevance":"secondary","evidence":"A","sort":4},{"concernId":"C045","ingredientId":"I075","relevance":"secondary","evidence":"C","sort":1},{"concernId":"C045","ingredientId":"I076","relevance":"secondary","evidence":"C","sort":2},{"concernId":"C045","ingredientId":"I041","relevance":"primary","evidence":"A","sort":3},{"concernId":"C046","ingredientId":"I023","relevance":"primary","evidence":"A","sort":1},{"concernId":"C046","ingredientId":"I024","relevance":"secondary","evidence":"B","sort":2},{"concernId":"C046","ingredientId":"I019","relevance":"secondary","evidence":"C","sort":3},{"concernId":"C047","ingredientId":"I020","relevance":"primary","evidence":"A","sort":1},{"concernId":"C047","ingredientId":"I062","relevance":"primary","evidence":"A","sort":2},{"concernId":"C047","ingredientId":"I077","relevance":"secondary","evidence":"B","sort":3},{"concernId":"C048","ingredientId":"I023","relevance":"primary","evidence":"A","sort":1},{"concernId":"C048","ingredientId":"I016","relevance":"primary","evidence":"A","sort":2},{"concernId":"C048","ingredientId":"I034","relevance":"primary","evidence":"A","sort":3},{"concernId":"C048","ingredientId":"I001","relevance":"primary","evidence":"A","sort":4},{"concernId":"C049","ingredientId":"I062","relevance":"primary","evidence":"A","sort":1},{"concernId":"C049","ingredientId":"I020","relevance":"primary","evidence":"A","sort":2},{"concernId":"C049","ingredientId":"I001","relevance":"primary","evidence":"A","sort":3},{"concernId":"C050","ingredientId":"I024","relevance":"primary","evidence":"B","sort":1},{"concernId":"C050","ingredientId":"I025","relevance":"primary","evidence":"B","sort":2},{"concernId":"C050","ingredientId":"I016","relevance":"primary","evidence":"A","sort":3},{"concernId":"C051","ingredientId":"I034","relevance":"primary","evidence":"A","sort":1},{"concernId":"C051","ingredientId":"I023","relevance":"primary","evidence":"A","sort":2},{"concernId":"C051","ingredientId":"I001","relevance":"primary","evidence":"A","sort":3},{"concernId":"C052","ingredientId":"I001","relevance":"primary","evidence":"A","sort":1},{"concernId":"C052","ingredientId":"I009","relevance":"secondary","evidence":"C","sort":2},{"concernId":"C052","ingredientId":"I003","relevance":"secondary","evidence":"C","sort":3},{"concernId":"C053","ingredientId":"I001","relevance":"primary","evidence":"A","sort":1},{"concernId":"C053","ingredientId":"I003","relevance":"secondary","evidence":"C","sort":2},{"concernId":"C053","ingredientId":"I008","relevance":"secondary","evidence":"C","sort":3},{"concernId":"C054","ingredientId":"I016","relevance":"primary","evidence":"A","sort":1},{"concernId":"C054","ingredientId":"I017","relevance":"primary","evidence":"A","sort":2},{"concernId":"C054","ingredientId":"I022","relevance":"secondary","evidence":"A","sort":3},{"concernId":"C054","ingredientId":"I001","relevance":"secondary","evidence":"A","sort":4},{"concernId":"C055","ingredientId":"I037","relevance":"primary","evidence":"A","sort":1},{"concernId":"C055","ingredientId":"I036","relevance":"primary","evidence":"A","sort":2},{"concernId":"C056","ingredientId":"I036","relevance":"primary","evidence":"A","sort":1},{"concernId":"C056","ingredientId":"I037","relevance":"primary","evidence":"A","sort":2},{"concernId":"C056","ingredientId":"I050","relevance":"secondary","evidence":"B","sort":3},{"concernId":"C057","ingredientId":"I062","relevance":"primary","evidence":"A","sort":1},{"concernId":"C057","ingredientId":"I064","relevance":"secondary","evidence":"A","sort":2},{"concernId":"C058","ingredientId":"I001","relevance":"secondary","evidence":"A","sort":1},{"concernId":"C058","ingredientId":"I083","relevance":"secondary","evidence":"C","sort":2},{"concernId":"C058","ingredientId":"I024","relevance":"secondary","evidence":"B","sort":3},{"concernId":"C059","ingredientId":"I036","relevance":"primary","evidence":"A","sort":1},{"concernId":"C059","ingredientId":"I037","relevance":"primary","evidence":"A","sort":2},{"concernId":"C059","ingredientId":"I062","relevance":"primary","evidence":"A","sort":3}]};
+
+const labels = {
+    home:"Home", wellness:"My Wellness", cabinet:"My Cabinet", providers:"Providers",
+    recommendations:"Recommendations", plans:"Plans", reminders:"Reminders", progress:"Progress",
+    academy:"Wellness Academy", lesson:"Academy Lesson", profile:"Profile", settings:"Settings"
+};
+
+const pages = document.querySelectorAll(".page");
+const nav = document.querySelectorAll(".nav-item");
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+
+function showPage(id){
+    pages.forEach(page=>page.classList.toggle("active",page.id===id));
+    nav.forEach(item=>item.classList.toggle("active",item.dataset.page===id));
+    document.getElementById("pageTitle").textContent="Wellness Agent";
+    document.getElementById("pageCrumb").textContent=" / "+(labels[id]||id);
+    history.replaceState(null,"","#"+id);
+    window.scrollTo({top:0,behavior:"smooth"});
+    closeSidebar();
+    if(id==="academy") renderAcademy();
+}
+
+nav.forEach(item=>item.addEventListener("click",()=>showPage(item.dataset.page)));
+
+document.getElementById("menu").onclick=()=>{
+    sidebar.classList.add("open");
+    overlay.classList.add("open");
+};
+function closeSidebar(){sidebar.classList.remove("open");overlay.classList.remove("open")}
+overlay.onclick=closeSidebar;
+
+function renderAcademy(){
+    document.getElementById("goalCount").textContent=TAXONOMY.goals.length;
+    document.getElementById("concernCount").textContent=TAXONOMY.concerns.length;
+    document.getElementById("ingredientCount").textContent=TAXONOMY.ingredients.length;
+    document.getElementById("mappingCount").textContent=TAXONOMY.goalIngredients.length+TAXONOMY.concernIngredients.length;
+    document.getElementById("academyMetric").textContent=TAXONOMY.goals.length;
+
+    const goalFilter=document.getElementById("academyGoalFilter");
+    const typeFilter=document.getElementById("academyTypeFilter");
+
+    if(goalFilter.options.length===1){
+        TAXONOMY.goals.forEach(g=>goalFilter.add(new Option(g.name,g.id)));
+        [...new Set(TAXONOMY.ingredients.map(i=>i.type))].sort().forEach(t=>{
+            typeFilter.add(new Option(t.replace(/_/g," "),t));
+        });
+    }
+
+    const search=(document.getElementById("academySearch").value||"").toLowerCase().trim();
+    const goalId=goalFilter.value;
+    const type=typeFilter.value;
+    const results=[];
+
+    TAXONOMY.goals.forEach(g=>{
+        if((!goalId||g.id===goalId) && (!search || `${g.name} ${g.description}`.toLowerCase().includes(search))){
+            const concerns=TAXONOMY.concerns.filter(c=>c.goalId===g.id);
+            const gi=TAXONOMY.goalIngredients.filter(m=>m.goalId===g.id);
+            results.push({
+                kind:"Goal",
+                id:g.id,
+                name:g.name,
+                meta:`${concerns.length} concerns · ${gi.length} goal ingredient mappings`,
+                desc:g.description
+            });
+        }
+    });
+
+    TAXONOMY.concerns.forEach(c=>{
+        const goal=TAXONOMY.goals.find(g=>g.id===c.goalId);
+        const related=TAXONOMY.concernIngredients.filter(m=>m.concernId===c.id);
+        if((!goalId||c.goalId===goalId) && (!search || `${c.name} ${c.description}`.toLowerCase().includes(search))){
+            results.push({
+                kind:"Concern",
+                id:c.id,
+                name:c.name,
+                meta:`${goal?goal.name:""} · ${related.length} ingredient mappings`,
+                desc:c.description
+            });
+        }
+    });
+
+    TAXONOMY.ingredients.forEach(i=>{
+        if((!type||i.type===type) && (!search || `${i.name} ${i.description}`.toLowerCase().includes(search))){
+            const goals=TAXONOMY.goalIngredients.filter(m=>m.ingredientId===i.id).length;
+            const concerns=TAXONOMY.concernIngredients.filter(m=>m.ingredientId===i.id).length;
+            results.push({
+                kind:"Ingredient",
+                id:i.id,
+                name:i.name,
+                meta:`${i.type.replace(/_/g," ")} · ${goals} goal mappings · ${concerns} concern mappings`,
+                desc:i.description
+            });
+        }
+    });
+
+    results.sort((a,b)=>a.kind.localeCompare(b.kind)||a.name.localeCompare(b.name));
+
+    const limited=results.slice(0,250);
+    document.getElementById("academyResultCount").textContent=
+        `Showing ${limited.length} of ${results.length} matching records.`;
+
+    document.getElementById("academyResults").innerHTML=limited.map(r=>`
+        <button class="taxonomy-item" type="button"
+            onclick="openTaxonomyDetail('${r.kind}','${r.id}')">
+            <span class="taxonomy-arrow">→</span>
+            <span class="badge">${escapeHtml(r.kind)}</span>
+            <strong>${escapeHtml(r.name)}</strong>
+            <small>${escapeHtml(r.meta)}</small>
+            <small>${escapeHtml(r.desc||"")}</small>
+        </button>
+    `).join("") || `<div class="empty"><h2>No matching records.</h2><p>Try a different search or filter.</p></div>`;
+}
+
+
+function escapeHtml(value){
+    return String(value).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+}
+
+document.getElementById("academySearch").addEventListener("input",renderAcademy);
+document.getElementById("academyGoalFilter").addEventListener("change",renderAcademy);
+document.getElementById("academyTypeFilter").addEventListener("change",renderAcademy);
+
+
+function openTaxonomyDetail(kind,id){
+    const modal=document.getElementById("taxonomyModal");
+    const title=document.getElementById("taxonomyModalTitle");
+    const sub=document.getElementById("taxonomyModalSub");
+    const body=document.getElementById("taxonomyModalBody");
+
+    let html="";
+
+    if(kind==="Goal"){
+        const goal=TAXONOMY.goals.find(g=>g.id===id);
+        if(!goal)return;
+
+        const concerns=TAXONOMY.concerns.filter(c=>c.goalId===goal.id);
+        const mappings=TAXONOMY.goalIngredients
+            .filter(m=>m.goalId===goal.id)
+            .sort((a,b)=>(a.sort||0)-(b.sort||0));
+
+        title.textContent=goal.name;
+        sub.textContent="Health Goal · Goal → Concern → Ingredient";
+
+        html=`
+            <div class="taxonomy-path">
+                <span>Goal</span><span class="path-arrow">→</span>
+                <span>${escapeHtml(goal.name)}</span>
+            </div>
+
+            <div class="taxonomy-detail-grid">
+                <div class="taxonomy-detail-card">
+                    <strong>${concerns.length} concerns</strong>
+                    <small>Specific wellness areas connected to this goal.</small>
+                </div>
+                <div class="taxonomy-detail-card">
+                    <strong>${mappings.length} ingredient mappings</strong>
+                    <small>Ingredients mapped directly to this health goal.</small>
+                </div>
+            </div>
+
+            <div class="taxonomy-detail-card" style="margin-top:10px">
+                <strong>Goal description</strong>
+                <small>${escapeHtml(goal.description||"")}</small>
+            </div>
+
+            <div class="card-title" style="margin-top:20px">Related concerns</div>
+            <div class="taxonomy-map">
+                ${concerns.map(c=>{
+                    const count=TAXONOMY.concernIngredients.filter(m=>m.concernId===c.id).length;
+                    return `
+                        <button class="taxonomy-map-item" type="button"
+                            onclick="openTaxonomyDetail('Concern','${c.id}')">
+                            <span>
+                                <strong>${escapeHtml(c.name)}</strong>
+                                <small>${escapeHtml(c.description||"")}</small>
+                            </span>
+                            <span class="tag">${count} ingredients →</span>
+                        </button>`;
+                }).join("") || `<div class="muted" style="font-size:11px">No concerns mapped.</div>`}
+            </div>
+
+            <div class="card-title" style="margin-top:20px">Direct ingredient mappings</div>
+            <div class="taxonomy-map">
+                ${mappings.map(m=>{
+                    const i=TAXONOMY.ingredients.find(x=>x.id===m.ingredientId);
+                    if(!i)return "";
+                    return `
+                        <button class="taxonomy-map-item" type="button"
+                            onclick="openTaxonomyDetail('Ingredient','${i.id}')">
+                            <span>
+                                <strong>${escapeHtml(i.name)}</strong>
+                                <small>${escapeHtml(i.description||"")}</small>
+                            </span>
+                            <span class="tag">${escapeHtml(m.relevance||"mapped")} · ${escapeHtml(m.evidence||"—")} →</span>
+                        </button>`;
+                }).join("") || `<div class="muted" style="font-size:11px">No ingredients mapped.</div>`}
+            </div>
+        `;
+    }
+
+    if(kind==="Concern"){
+        const concern=TAXONOMY.concerns.find(c=>c.id===id);
+        if(!concern)return;
+
+        const goal=TAXONOMY.goals.find(g=>g.id===concern.goalId);
+        const mappings=TAXONOMY.concernIngredients
+            .filter(m=>m.concernId===concern.id)
+            .sort((a,b)=>(a.sort||0)-(b.sort||0));
+
+        title.textContent=concern.name;
+        sub.textContent="Concern · Goal → Concern → Ingredient";
+
+        html=`
+            <div class="taxonomy-path">
+                <button class="taxonomy-map-item" type="button"
+                    style="display:inline-flex;padding:5px 8px"
+                    onclick="openTaxonomyDetail('Goal','${goal ? goal.id : ""}')">
+                    <span>${escapeHtml(goal ? goal.name : "Unassigned goal")}</span>
+                </button>
+                <span class="path-arrow">→</span>
+                <span>${escapeHtml(concern.name)}</span>
+            </div>
+
+            <div class="taxonomy-detail-card" style="margin-top:16px">
+                <strong>Concern description</strong>
+                <small>${escapeHtml(concern.description||"")}</small>
+            </div>
+
+            <div class="taxonomy-detail-grid">
+                <div class="taxonomy-detail-card">
+                    <strong>${mappings.length} ingredient mappings</strong>
+                    <small>Ingredients associated directly with this concern.</small>
+                </div>
+                <div class="taxonomy-detail-card">
+                    <strong>${goal ? escapeHtml(goal.name) : "Unassigned"}</strong>
+                    <small>Parent health goal.</small>
+                </div>
+            </div>
+
+            <div class="card-title" style="margin-top:20px">Mapped ingredients</div>
+            <div class="taxonomy-map">
+                ${mappings.map(m=>{
+                    const i=TAXONOMY.ingredients.find(x=>x.id===m.ingredientId);
+                    if(!i)return "";
+                    return `
+                        <button class="taxonomy-map-item" type="button"
+                            onclick="openTaxonomyDetail('Ingredient','${i.id}')">
+                            <span>
+                                <strong>${escapeHtml(i.name)}</strong>
+                                <small>${escapeHtml(i.description||"")}</small>
+                            </span>
+                            <span class="tag">${escapeHtml(m.relevance||"mapped")} · evidence ${escapeHtml(m.evidence||"—")} →</span>
+                        </button>`;
+                }).join("") || `<div class="muted" style="font-size:11px">No ingredients mapped.</div>`}
+            </div>
+        `;
+    }
+
+    if(kind==="Ingredient"){
+        const ingredient=TAXONOMY.ingredients.find(i=>i.id===id);
+        if(!ingredient)return;
+
+        const goalMaps=TAXONOMY.goalIngredients.filter(m=>m.ingredientId===id);
+        const concernMaps=TAXONOMY.concernIngredients.filter(m=>m.ingredientId===id);
+
+        title.textContent=ingredient.name;
+        sub.textContent="Ingredient · Connected goals and concerns";
+
+        html=`
+            <div class="taxonomy-path">
+                <span>Ingredient</span><span class="path-arrow">→</span>
+                <span>${escapeHtml(ingredient.name)}</span>
+            </div>
+
+            <div class="taxonomy-detail-card" style="margin-top:16px">
+                <strong>${escapeHtml((ingredient.type||"other").replace(/_/g," "))}</strong>
+                <small>${escapeHtml(ingredient.description||"")}</small>
+            </div>
+
+            <div class="taxonomy-detail-grid">
+                <div class="taxonomy-detail-card">
+                    <strong>${goalMaps.length} goal mappings</strong>
+                    <small>Health goals connected to this ingredient.</small>
+                </div>
+                <div class="taxonomy-detail-card">
+                    <strong>${concernMaps.length} concern mappings</strong>
+                    <small>Specific concerns connected to this ingredient.</small>
+                </div>
+            </div>
+
+            <div class="card-title" style="margin-top:20px">Goal relationships</div>
+            <div class="taxonomy-map">
+                ${goalMaps.map(m=>{
+                    const g=TAXONOMY.goals.find(x=>x.id===m.goalId);
+                    if(!g)return "";
+                    return `
+                        <button class="taxonomy-map-item" type="button"
+                            onclick="openTaxonomyDetail('Goal','${g.id}')">
+                            <span>
+                                <strong>${escapeHtml(g.name)}</strong>
+                                <small>Goal relationship</small>
+                            </span>
+                            <span class="tag">${escapeHtml(m.relevance||"mapped")} · ${escapeHtml(m.evidence||"—")} →</span>
+                        </button>`;
+                }).join("") || `<div class="muted" style="font-size:11px">No goal mappings.</div>`}
+            </div>
+
+            <div class="card-title" style="margin-top:20px">Concern relationships</div>
+            <div class="taxonomy-map">
+                ${concernMaps.map(m=>{
+                    const c=TAXONOMY.concerns.find(x=>x.id===m.concernId);
+                    if(!c)return "";
+                    return `
+                        <button class="taxonomy-map-item" type="button"
+                            onclick="openTaxonomyDetail('Concern','${c.id}')">
+                            <span>
+                                <strong>${escapeHtml(c.name)}</strong>
+                                <small>${escapeHtml(c.description||"")}</small>
+                            </span>
+                            <span class="tag">${escapeHtml(m.relevance||"mapped")} · ${escapeHtml(m.evidence||"—")} →</span>
+                        </button>`;
+                }).join("") || `<div class="muted" style="font-size:11px">No concern mappings.</div>`}
+            </div>
+        `;
+    }
+
+    body.innerHTML=html;
+    modal.classList.add("open");
+}
+
+function closeTaxonomyModal(){
+    document.getElementById("taxonomyModal").classList.remove("open");
+}
+
+document.addEventListener("keydown",function(event){
+    if(event.key==="Escape"){
+        closeTaxonomyModal();
+    }
+});
+
+function startLearning(){openLesson("sleep-basics")}
+
+function openLesson(lesson){
+    const lessonData={
+        "sleep-basics":{title:"Understanding Sleep",description:"Learn the fundamentals of sleep, sleep quality and daily recovery.",progress:25},
+        "goals":{title:"Understanding Wellness Goals",description:"Learn how wellness goals organize the agent's understanding of what you want to work toward.",progress:25},
+        "concerns":{title:"Understanding Wellness Concerns",description:"Learn how concerns add detail and context to a broader wellness goal.",progress:25},
+        "ingredients":{title:"Understanding Ingredients",description:"Learn how ingredients connect products to wellness goals and concerns.",progress:25},
+        "labels":{title:"Reading Product Labels",description:"Learn how to interpret serving size, ingredients and other product information.",progress:25},
+        "forms":{title:"Understanding Product Forms",description:"Learn about different product forms and the information that distinguishes them.",progress:25},
+        "evidence":{title:"Understanding Evidence",description:"Learn how evidence can help evaluate information connected to a recommendation.",progress:25},
+        "safety":{title:"Safety & Interactions",description:"Learn why safety is a gate rather than simply another recommendation score.",progress:25}
+    };
+    const data=lessonData[lesson]; if(!data)return;
+    document.getElementById("lessonTitle").textContent=data.title;
+    document.getElementById("lessonDescription").textContent=data.description;
+    document.getElementById("lessonProgress").style.width=data.progress+"%";
+    document.getElementById("lessonStatus").textContent="In progress";
+    showPage("lesson");
+}
+
+function completeLesson(){
+    document.getElementById("lessonProgress").style.width="100%";
+    document.getElementById("lessonStatus").textContent="Completed";
+    openChatWith("Lesson completed. Your Academy progress has been updated in this prototype.");
+}
+
+function askAcademy(message){
+    document.getElementById("chatInput").value=message;
+    openChatWith("Agent context prepared for: "+message);
+    document.getElementById("chatInput").focus();
+}
+
+function openChatWith(message){
+    document.getElementById("chatResponse").textContent=message;
+    document.getElementById("chatWindow").classList.add("open");
+}
+function closeChat(){document.getElementById("chatWindow").classList.remove("open")}
+
+document.getElementById("plus").onclick=()=>document.getElementById("chatWindow").classList.toggle("open");
+
+function sendMessage(){
+    const input=document.getElementById("chatInput");
+    const message=input.value.trim(); if(!message)return;
+    openChatWith("Agent context prepared for: "+message);
+    input.value="";
+}
+document.getElementById("send").onclick=sendMessage;
+document.getElementById("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendMessage()});
+
+function editProfile(){alert("Profile editor integration point.")}
+function addProduct(){alert("Product catalog integration point.")}
+function createPlan(){alert("Plan builder integration point.")}
+function addReminder(){alert("Reminder system integration point.")}
+
+function openProviderModal(){document.getElementById("providerModal").classList.add("open")}
+function closeProviderModal(){document.getElementById("providerModal").classList.remove("open")}
+
+const initialPage=location.hash.replace("#","");
+if(initialPage && labels[initialPage]) showPage(initialPage);
+else renderAcademy();
+</script>
+
+</body>
+</html>
