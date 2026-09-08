@@ -1,0 +1,4 @@
+retailer_slug,retailer_sku,brand_name,product_name,category_slug,format_slug,canonical_upc,package_size_label,serving_size_label,servings_per_container,current_price_cents,currency,availability,listing_url,image_url,ingredients_json,last_checked_at,source_notes
+costco,,,,,,,,,,,USD,unknown,,,,,,
+cvs,,,,,,,,,,,USD,unknown,,,,,,
+walgreens,,,,,,,,,,,USD,unknown,,,,,,
